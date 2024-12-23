@@ -7,11 +7,21 @@
   "private": true,
   "main": "public/electron.js",
   "dependencies": {
+    "@electron/remote": "^2.1.2",
+    "@fortawesome/fontawesome-svg-core": "^6.7.2",
+    "@fortawesome/free-brands-svg-icons": "^6.7.2",
+    "@fortawesome/free-regular-svg-icons": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@fortawesome/react-fontawesome": "^0.2.2",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.0.0",
     "@testing-library/user-event": "^13.2.1",
+    "crypto-browserify": "^3.12.1",
+    "dotenv": "^16.4.7",
     "electron-is-dev": "^3.0.1",
+    "path-browserify": "^1.0.1",
     "react": "^19.0.0",
+    "react-app-rewired": "^2.2.1",
     "react-dom": "^19.0.0",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.0"
@@ -22,7 +32,8 @@
     "desktop": "concurrently \"yarn react-start\" \"wait-on http://localhost:3000 && yarn electron-start\"",
     "react-start": "react-scripts start",
     "electron-start": "electron . --disable-gpu",
-    "package": "yarn build && electron-builder"
+    "package": "yarn build && electron-builder",
+    "deploy": "yarn build && node deploy.js"
   },
   "eslintConfig": {
     "extends": [
@@ -51,7 +62,7 @@
   },
   "build": {
     "appId": "com.example.unified-vpl-framework",
-    "productName": "Unified-VPL-Framework",
+    "productName": "Unified VPL Framework",
     "directories": {
       "buildResources": "assets"
     },

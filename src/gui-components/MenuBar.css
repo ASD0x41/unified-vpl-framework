@@ -1,0 +1,28 @@
+.menu-bar {
+    grid-column: 1 / 2;
+    grid-row: 2 / 5;
+
+    background-color: #444;
+
+    padding: 5px;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.icon-button {
+    background-color: #555;
+    color: white;
+
+    width: 30px;
+    height: 30px;
+
+    margin-bottom: 5px;
+
+    border: none;
+    padding: 4px;
+
+    cursor: pointer;
+}

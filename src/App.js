@@ -1,23 +1,29 @@
-import logo from './logo.svg';
 import './App.css';
+import { useState } from 'react';
+
+import Header from './gui-components/Header.js'
+import MenuBar from './gui-components/MenuBar.js'
+import Workspace from './gui-components/Workspace.js'
+import Library from './gui-components/Library.js'
+import Console from './gui-components/Console.js'
+import Panel from './gui-components/Panel.js'
 
 function App() {
+  const [libExtension, setLibExtension] = useState(false);
+  const [logMessages, setLogMessages] = useState([]);
+
+  const clearConsole = () => {
+    setLogMessages([]);
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Header />
+      <MenuBar clearConsole={clearConsole} />
+      <Workspace />
+      <Library libLevel={libExtension} />
+      <Console logMessages={logMessages} setLogMessages={setLogMessages} />
+      <Panel libLevel={libExtension} setLibLevel={setLibExtension}/>
     </div>
   );
 }

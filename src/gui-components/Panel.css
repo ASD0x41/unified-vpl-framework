@@ -1,0 +1,37 @@
+.panel {
+    grid-column: 3 / 5;
+    grid-row: 3 / 5;
+
+    /* background-color: #888; */
+    background-color: #444;
+    color: white;
+
+    overflow-y: auto;
+    max-width: 25vw;
+
+    transition: height 0.3s ease;
+
+    z-index: 2;
+}
+
+.panel .icon-button {
+    background-color: #444;
+}
+
+#panel-output {
+    background-color: #333;
+    color: #fff;
+
+    margin: 10px 10px 10px 10px;
+    padding: 10px;
+    overflow-y: auto;
+    overflow-x: auto;
+
+    height: calc(100% - 50px);
+    width: calc(100% - 20px);
+
+    max-width: calc(100% - 20px);
+    border-radius: 10px;
+
+    font-family: monospace;
+}
