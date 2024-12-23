@@ -5,56 +5,30 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMinus, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { faSquare } from '@fortawesome/free-regular-svg-icons';
 
-const { ipcRenderer } = require('electron');
-
-// function minimizeWindow() {
-//   ipcRenderer.send('minimize-window');
-// }
-
-// function maximizeWindow() {
-//   ipcRenderer.send('maximize-window');
-// }
-
-// function closeWindow() {
-//   ipcRenderer.send('close-window');
-// }
-
 export default function Header() {
     const minimizeWindow = () => {
-        ipcRenderer.send('minimize-window');
+        if (window.electron) {
+            window.electron.minimize();
+        } else {
+            console.log('Running in browser, cannot minimize window.');
+        }
     };
 
     const maximizeWindow = () => {
-        ipcRenderer.send('maximize-window');
+        if (window.electron) {
+            window.electron.maximize();
+        } else {
+            console.log('Running in browser, cannot maximize window.');
+        }
     };
 
     const closeWindow = () => {
-        ipcRenderer.send('close-window');
+        if (window.electron) {
+            window.electron.close();
+        } else {
+            console.log('Running in browser, cannot close window.');
+        }
     };
-
-    // const minimizeWindow = () => {
-    //     if (window.electron) {
-    //         window.electron.minimize();
-    //     } else {
-    //         console.log('Running in browser, cannot minimize window.');
-    //     }
-    // };
-
-    // const maximizeWindow = () => {
-    //     if (window.electron) {
-    //         window.electron.maximize();
-    //     } else {
-    //         console.log('Running in browser, cannot maximize window.');
-    //     }
-    // };
-
-    // const closeWindow = () => {
-    //     if (window.electron) {
-    //         window.electron.close();
-    //     } else {
-    //         console.log('Running in browser, cannot close window.');
-    //     }
-    // };
 
     return (
         <header className="title-bar">

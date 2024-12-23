@@ -13,11 +13,12 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
-    frame: false,               // Hide the default title bar
-    titleBarStyle: 'hidden',    // Hide the OS-specific title bar
+    frame: false,
+    titleBarStyle: 'hidden',
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
+      nodeIntegration: false, 
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js')
     },
   });
 
