@@ -17,9 +17,9 @@
     "web-vitals": "^2.1.0"
   },
   "scripts": {
-    "start": "yarn react-start",
+    "web": "yarn react-start",
     "build": "react-scripts build",
-    "electron": "concurrently \"yarn react-start\" \"wait-on http://localhost:3000 && yarn electron-start\"",
+    "desktop": "concurrently \"yarn react-start\" \"wait-on http://localhost:3000 && yarn electron-start\"",
     "react-start": "react-scripts start",
     "electron-start": "electron . --disable-gpu",
     "package": "yarn build && electron-builder"
