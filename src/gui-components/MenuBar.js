@@ -8,10 +8,22 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import { changeZoom } from './Workspace';
+import { useConnectionContext } from '../program-management/Manager.js';
 
 export default function MenuBar({ clearConsole, canvas, loadComponents }) {
+    const { isConnecting, isDisconnecting } = useConnectionContext();
 
+    const connectionMode = () => {
+        isConnecting.current = !isConnecting.current;
+        if (isConnecting.current)
+            isDisconnecting.current = false;
+    };
 
+    const disconnectionMode = () => {
+        isDisconnecting.current = !isDisconnecting.current;
+        if (isDisconnecting.current)
+            isConnecting.current = false;
+    };
 
     const backToCenter = () => {
         if (canvas.current) {
@@ -108,10 +120,10 @@ export default function MenuBar({ clearConsole, canvas, loadComponents }) {
                 <button className="icon-button" title="Delete Object" id="del-obj" onClick={delObject}>
                     <FontAwesomeIcon icon={faTrashAlt} />
                 </button>
-                <button className="icon-button" title="Connect Objects" id="connect-btn">
+                <button className="icon-button" title="Connect Objects" id="connect-btn" onClick={connectionMode}>
                     <FontAwesomeIcon icon={faLink} />
                 </button>
-                <button className="icon-button" title="Disconnect Objects">
+                <button className="icon-button" title="Disconnect Objects" id="disconnect-btn" onClick={disconnectionMode}>
                     <FontAwesomeIcon icon={faBan} />
                 </button>
 

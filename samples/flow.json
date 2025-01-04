@@ -17,13 +17,13 @@
             "text": {
                 "content": "Read",
                 "fontSize": 14,
-                "fill": "black",
+                "fill": "white",
                 "textAlign": "center",
                 "area": [[0,0],[100,50]]
             },
             "dimensions": [100,50],
-            "inpins": [[50,0]],
-            "outpins": [[50,50]],
+            "inpins": [[50,0,"top"]],
+            "outpins": [[50,50,"bottom"]],
             "props": ["varname","prompt"],
             "code": "#1 = input(#2)"
         },
@@ -41,13 +41,13 @@
             "text": {
                 "content": "Write",
                 "fontSize": 14,
-                "fill": "black",
+                "fill": "white",
                 "textAlign": "center",
                 "area": [[0,0],[100,50]]
             },
             "dimensions": [100,50],
-            "inpins": [[50,0]],
-            "outpins": [[50,50]],
+            "inpins": [[50,0,"top"]],
+            "outpins": [[50,50,"bottom"]],
             "props": ["content"],
             "code": "print(#1)"
         },
@@ -70,8 +70,8 @@
                 "area": [[0,0],[100,50]]
             },
             "dimensions": [100,50],
-            "inpins": [[50,0]],
-            "outpins": [[25,50],[75,50]],
+            "inpins": [[50,0,"top"]],
+            "outpins": [[25,50,"bottom"],[75,50,"bottom"]],
             "props": ["condition"],
             "code": "if #1:\n\t$1\n\telse:\n\t$2"
         }

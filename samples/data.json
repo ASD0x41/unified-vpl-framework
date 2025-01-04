@@ -16,13 +16,13 @@
             "text": {
                 "content": "Read",
                 "fontSize": 14,
-                "fill": "black",
+                "fill": "white",
                 "textAlign": "center",
                 "area": [[0,0],[50,50]]
             },
             "dimensions": [50,50],
-            "inpins": [[25,0]],
-            "outpins": [[25,50]],
+            "inpins": [[25,0,"top"]],
+            "outpins": [[25,50,"bottom"]],
             "props": ["prompt"],
             "code": "#0 = input(#1)"
         },
@@ -40,12 +40,12 @@
             "text": {
                 "content": "Write",
                 "fontSize": 14,
-                "fill": "black",
+                "fill": "white",
                 "textAlign": "center",
                 "area": [[0,0],[100,50]]
             },
             "dimensions": [100,50],
-            "inpins": [[25,0],[75,0]],
+            "inpins": [[25,0,"top"],[75,0,"top"]],
             "outpins": [],
             "props": ["prefix","suffix"],
             "code": "print(#1 + @2 + #2)"
@@ -69,8 +69,8 @@
                 "area": [[0,0],[100,50]]
             },
             "dimensions": [100,50],
-            "inpins": [[50,0]],
-            "outpins": [[25,50],[75,50]],
+            "inpins": [[50,0,"top"]],
+            "outpins": [[25,50,"bottom"],[75,50,"bottom"]],
             "props": [],
             "code": "if @1:\n\t$1\n\telse:\n\t$2"
         },
@@ -92,8 +92,8 @@
                 "area": [[0,0],[50,50]]
             },
             "dimensions": [50,50],
-            "inpins": [[0,25],[50,25]],
-            "outpins": [[25,50]],
+            "inpins": [[0,25,"left"],[50,25,"right"]],
+            "outpins": [[25,50,"bottom"]],
             "props": [],
             "code": "@1 == @2"
         }

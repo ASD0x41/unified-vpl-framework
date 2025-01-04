@@ -1,5 +1,6 @@
 import './App.css';
-import { useState, useRef } from 'react';
+import { fabric } from 'fabric';
+import { useState, useRef, useCallback } from 'react';
 
 import Header from './gui-components/Header.js'
 import MenuBar from './gui-components/MenuBar.js'
@@ -9,12 +10,14 @@ import Console from './gui-components/Console.js'
 import Panel from './gui-components/Panel.js'
 
 import { LoadLanguage } from './program-management/Loader.js';
+import { Manager } from './program-management/Manager.js';
 
 function App() {
   const [libExtension, setLibExtension] = useState(false);
   const [logMessages, setLogMessages] = useState([]);
-  const [libraryComponents, setLibraryComponents] = useState({});
-  
+  // const [libraryComponents, setLibraryComponents] = useState({});
+  const [libraryComponents, setLibraryComponents] = useState({ "input": { "id": "input", "label": "Read", "style": { "type": "rect", "left": 0, "top": 0, "width": 100, "height": 50, "fill": "blue" }, "text": { "content": "Read", "fontSize": 14, "fill": "white", "textAlign": "center", "area": [[0, 0], [100, 50]] }, "dimensions": [100, 50], "inpins": [[50, 0, "top"]], "outpins": [[50, 50, "bottom"]], "props": ["varname", "prompt"], "code": "#1 = input(#2)" }, "output": { "id": "output", "label": "Write", "style": { "type": "rect", "left": 0, "top": 0, "width": 100, "height": 50, "fill": "green" }, "text": { "content": "Write", "fontSize": 14, "fill": "white", "textAlign": "center", "area": [[0, 0], [100, 50]] }, "dimensions": [100, 50], "inpins": [[50, 0, "top"]], "outpins": [[50, 50, "bottom"]], "props": ["content"], "code": "print(#1)" }, "condition": { "id": "condition", "label": "If-Else", "style": { "type": "rect", "left": 0, "top": 0, "width": 100, "height": 50, "fill": "red" }, "text": { "content": "If-Else", "fontSize": 14, "fill": "black", "textAlign": "center", "area": [[0, 0, "top"], [100, 50, "top"]] }, "dimensions": [100, 50], "inpins": [[50, 0]], "outpins": [[25, 50, "bottom"], [75, 50, "bottom"]], "props": ["condition"], "code": "if #1:\n\t$1\n\telse:\n\t$2" } });
+
   const [draggedComponent, setDraggedComponent] = useState(null);
   const [canvasProps, setCanvasProps] = useState({
     vpWidth: 800,
@@ -30,30 +33,53 @@ function App() {
   });
   const canvasRef = useRef(null);
 
-  const handleCanvasReady = (canvasInstance) => {
+  const handleCanvasReady = useCallback((canvasInstance) => {
     canvasInstance.on('mouse:move', function (opt) {
-        var evt = opt.e;
-        var vpt = canvasInstance.viewportTransform;
-        var centerX = vpt[4] - canvasInstance.getWidth() / 2;
-        var centerY = vpt[5] - canvasInstance.getHeight() / 2;
-  
-        setCanvasProps({
-          vpWidth: canvasInstance.getWidth(),
-          vpHeight: canvasInstance.getHeight(),
-          vptx: vpt[4],
-          vpty: vpt[5],
-          zmx: vpt[0],
-          zmy: vpt[3],
-          centerX,
-          centerY,
-          clntx: evt.clientX,
-          clnty: evt.clientY
-        });
-      });
+      var evt = opt.e;
+      var vpt = canvasInstance.viewportTransform;
+      var centerX = vpt[4] - canvasInstance.getWidth() / 2;
+      var centerY = vpt[5] - canvasInstance.getHeight() / 2;
 
+      setCanvasProps({
+        vpWidth: canvasInstance.getWidth(),
+        vpHeight: canvasInstance.getHeight(),
+        vptx: vpt[4],
+        vpty: vpt[5],
+        zmx: vpt[0],
+        zmy: vpt[3],
+        centerX,
+        centerY,
+        clntx: evt.clientX,
+        clnty: evt.clientY
+      });
+    });
+
+    fabric.Group.prototype.toObject = (function (toObject) {
+      return function () {
+        return fabric.util.object.extend(toObject.call(this), {
+          id: this.id || null,
+          ID: this.ID || null
+        });
+      };
+    })(fabric.Group.prototype.toObject);
+
+    fabric.Group.prototype.stateProperties.push('id');
+    fabric.Group.prototype.stateProperties.push('ID');
+
+    fabric.Circle.prototype.toObject = (function (toObject) {
+      return function () {
+        return fabric.util.object.extend(toObject.call(this), {
+          idx: this.idx || null,
+          side: this.side || null
+        });
+      };
+    })(fabric.Circle.prototype.toObject);
+
+    fabric.Circle.prototype.stateProperties.push('idx');
+    fabric.Circle.prototype.stateProperties.push('side');
 
     canvasRef.current = canvasInstance;
-  };
+  }, []);
 
   const clearConsole = () => {
     setLogMessages([]);
@@ -61,17 +87,20 @@ function App() {
 
   const loadVisualLang = (json) => {
     LoadLanguage(json, setLibraryComponents);
+    // console.log(JSON.stringify(libraryComponents))
   };
 
   return (
-    <div className="App">
-      <Header />
-      <MenuBar clearConsole={clearConsole}  canvas={canvasRef} loadComponents={loadVisualLang} />
-      <Workspace onCanvasReady={handleCanvasReady} draggedComponent={draggedComponent} clearDrag={setDraggedComponent} />
-      <Library libLevel={libExtension} components={libraryComponents} onDragStart={setDraggedComponent} />
-      <Console logMessages={logMessages} setLogMessages={setLogMessages} />
-      <Panel libLevel={libExtension} setLibLevel={setLibExtension} canvasProps={canvasProps} />
-    </div>
+    <Manager>
+      <div className="App">
+        <Header />
+        <MenuBar clearConsole={clearConsole} canvas={canvasRef} loadComponents={loadVisualLang} />
+        <Workspace onCanvasReady={handleCanvasReady} draggedComponent={draggedComponent} libComps={libraryComponents}/>
+        <Library libLevel={libExtension} components={libraryComponents} onDragStart={setDraggedComponent} />
+        <Console logMessages={logMessages} setLogMessages={setLogMessages} />
+        <Panel libLevel={libExtension} setLibLevel={setLibExtension} canvasProps={canvasProps} />
+      </div>
+    </Manager>
   );
 }
 
