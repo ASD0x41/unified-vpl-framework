@@ -20,6 +20,9 @@ function createWindow() {
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js')
     },
+    minWidth: 800,
+    minHeight: 600,
+    resizable: false,
   });
 
   const startUrl = isDev
@@ -31,6 +34,8 @@ function createWindow() {
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
+
+  mainWindow.maximize();
 }
 
 app.on('ready', () => {

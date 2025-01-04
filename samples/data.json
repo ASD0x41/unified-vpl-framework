@@ -1,0 +1,101 @@
+{
+    "name": "my_dataflow_based_vpl",
+    "type": "dataflow",
+    "version": "0.1.0",
+    "components": [
+        {
+            "id": "input",
+            "label": "Read",
+            "style": {
+                "type": "circle",
+                "left": 0,
+                "top": 0,
+                "radius": 25,
+                "fill": "blue"
+            },
+            "text": {
+                "content": "Read",
+                "fontSize": 14,
+                "fill": "black",
+                "textAlign": "center",
+                "area": [[0,0],[50,50]]
+            },
+            "dimensions": [50,50],
+            "inpins": [[25,0]],
+            "outpins": [[25,50]],
+            "props": ["prompt"],
+            "code": "#0 = input(#1)"
+        },
+        {
+            "id": "output",
+            "label": "Write",
+            "style": {
+                "type": "rect",
+                "left": 0,
+                "top": 0,
+                "width": 100,
+                "height": 50,
+                "fill": "green"
+            },
+            "text": {
+                "content": "Write",
+                "fontSize": 14,
+                "fill": "black",
+                "textAlign": "center",
+                "area": [[0,0],[100,50]]
+            },
+            "dimensions": [100,50],
+            "inpins": [[25,0],[75,0]],
+            "outpins": [],
+            "props": ["prefix","suffix"],
+            "code": "print(#1 + @2 + #2)"
+        },
+        {
+            "id": "condition",
+            "label": "If-Else",
+            "style": {
+                "type": "rect",
+                "left": 0,
+                "top": 0,
+                "width": 100,
+                "height": 50,
+                "fill": "red"
+            },
+            "text": {
+                "content": "If-Else",
+                "fontSize": 14,
+                "fill": "black",
+                "textAlign": "center",
+                "area": [[0,0],[100,50]]
+            },
+            "dimensions": [100,50],
+            "inpins": [[50,0]],
+            "outpins": [[25,50],[75,50]],
+            "props": [],
+            "code": "if @1:\n\t$1\n\telse:\n\t$2"
+        },
+        {
+            "id": "equality",
+            "label": "IsEqual?",
+            "style": {
+                "type": "circle",
+                "left": 0,
+                "top": 0,
+                "radius": 25,
+                "fill": "red"
+            },
+            "text": {
+                "content": "==",
+                "fontSize": 14,
+                "fill": "black",
+                "textAlign": "center",
+                "area": [[0,0],[50,50]]
+            },
+            "dimensions": [50,50],
+            "inpins": [[0,25],[50,25]],
+            "outpins": [[25,50]],
+            "props": [],
+            "code": "@1 == @2"
+        }
+    ]
+}

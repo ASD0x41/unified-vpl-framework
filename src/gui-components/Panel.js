@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
-export default function Panel({ libLevel, setLibLevel }) {
+export default function Panel({ libLevel, setLibLevel, canvasProps }) {
     const [collapse, setCollapse] = useState(false);
 
     const togglePanel = () => {
@@ -22,11 +22,11 @@ export default function Panel({ libLevel, setLibLevel }) {
             </div>
             {!collapse && (
                 <div id="panel-output">
-                    <div>(width,height) = (<span id="width"></span>,<span id="height"></span>)</div>
-                    <div>(vpt[4],vpt[5]) = (<span id="vptx"></span>,<span id="vpty"></span>)</div>
-                    <div>(vpt[0],vpt[3]) = (<span id="zmx"></span>,<span id="zmy"></span>)</div>
-                    <div>(centX,centY) = (<span id="centx"></span>,<span id="centy"></span>)</div>
-                    <div>(clntX,clntY) = (<span id="clntx"></span>,<span id="clnty"></span>)</div>
+                    <div>(width,height) = (<span id="width"></span>{canvasProps.vpWidth},{canvasProps.vpHeight}<span id="height"></span>)</div>
+                    <div>(vpt[4],vpt[5]) = (<span id="vptx"></span>{canvasProps.vptx},{canvasProps.vpty}<span id="vpty"></span>)</div>
+                    <div>(vpt[0],vpt[3]) = (<span id="zmx"></span>{canvasProps.zmx},{canvasProps.zmy}<span id="zmy"></span>)</div>
+                    <div>(centX,centY) = (<span id="centx"></span>{canvasProps.centerX},{canvasProps.centerY}<span id="centy"></span>)</div>
+                    <div>(clntX,clntY) = (<span id="clntx"></span>{canvasProps.clntx},{canvasProps.clnty}<span id="clnty"></span>)</div>
                 </div>
             )}
         </div>

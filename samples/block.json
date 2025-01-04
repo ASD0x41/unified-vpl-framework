@@ -1,0 +1,115 @@
+{
+    "name": "my_block_based_vpl",
+    "type": "block",
+    "version": "0.1.0",
+    "components": [
+        {
+            "id": "input",
+            "label": "Read",
+            "style": {
+                "type": "polygon",
+                "points": [
+                    { "x": 0, "y": 0 },
+                    { "x": 45, "y": 0 },
+                    { "x": 50, "y": 5 },
+                    { "x": 55, "y": 0 },
+                    { "x": 100, "y": 0 },
+                    { "x": 100, "y": 50 },
+                    { "x": 55, "y": 50 },
+                    { "x": 50, "y": 55 },
+                    { "x": 45, "y": 50 },
+                    { "x": 0, "y": 50 }
+                ],
+                "fill": "blue"
+            },
+            "text": {
+                "content": "Read",
+                "fontSize": 14,
+                "fill": "black",
+                "textAlign": "center",
+                "area": [[0,0],[100,50]]
+            },
+            "dimensions": [100,50],
+            "inpins": [[50,0]],
+            "outpins": [[50,50]],
+            "props": ["varname","prompt"],
+            "code": "#1 = input(#2)"
+        },
+        {
+            "id": "output",
+            "label": "Write",
+            "style": {
+                "type": "polygon",
+                "points": [
+                    { "x": 0, "y": 0 },
+                    { "x": 45, "y": 0 },
+                    { "x": 50, "y": 5 },
+                    { "x": 55, "y": 0 },
+                    { "x": 100, "y": 0 },
+                    { "x": 100, "y": 50 },
+                    { "x": 55, "y": 50 },
+                    { "x": 50, "y": 55 },
+                    { "x": 45, "y": 50 },
+                    { "x": 0, "y": 50 }
+                ],
+                "fill": "green"
+            },
+            "text": {
+                "content": "Write",
+                "fontSize": 14,
+                "fill": "black",
+                "textAlign": "center",
+                "area": [[0,0],[100,50]]
+            },
+            "dimensions": [100,50],
+            "inpins": [[50,0]],
+            "outpins": [[50,50]],
+            "props": ["content"],
+            "code": "print(#1)"
+        },
+        {
+            "id": "condition",
+            "label": "If-Else",
+            "style": {
+                "type": "polygon",
+                "points": [
+                    { "x": 0, "y": 0 },
+                    { "x": 45, "y": 0 },
+                    { "x": 50, "y": 5 },
+                    { "x": 55, "y": 0 },
+                    { "x": 100, "y": 0 },
+                    { "x": 100, "y": 50 },
+                    { "x": 80, "y": 50 },
+                    { "x": 75, "y": 55 },
+                    { "x": 70, "y": 50 },
+                    { "x": 25, "y": 50 },
+                    { "x": 25, "y": 75 },
+                    { "x": 70, "y": 75 },
+                    { "x": 75, "y": 80 },
+                    { "x": 80, "y": 75 },
+                    { "x": 100, "y": 75 },
+                    { "x": 100, "y": 100 },
+                    { "x": 55, "y": 100 },
+                    { "x": 50, "y": 105 },
+                    { "x": 45, "y": 100 },
+                    { "x": 0, "y": 100 }
+                ],
+                "fill": "red"
+            },
+            "text": {
+                "content": "If-Else",
+                "fontSize": 14,
+                "fill": "black",
+                "textAlign": "center",
+                "area": [[0,0],[100,50]]
+            },
+            "dimensions": [100,100],
+            "inpins": [[50,0]],
+            "outpins": [[75,50],[50,100]],
+            "insert-area": [[[25,50],[125,75]]],
+            "expand-area": [[[0,50],[25,75]]],
+            "props": ["condition"],
+            "code": "if #1:\n\t$1\n\telse:\n\t$2"
+        }
+    ]
+}

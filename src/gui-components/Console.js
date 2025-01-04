@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 export default function Console({ logMessages, setLogMessages }) {
-  const [collapse, setCollapse] = useState(true);
+  const [collapse, setCollapse] = useState(false);
   const consoleInputRef = useRef(null);
   const consoleOutputRef = useRef(null);
 
@@ -33,12 +33,13 @@ export default function Console({ logMessages, setLogMessages }) {
       console.log = originalConsoleLog;
       console.error = originalConsoleError;
     };
-  }, []);
+  }, [setLogMessages]);
 
   const handleKeyPress = (event) => {
     if (event.key === 'Enter') {
       const command = consoleInputRef.current.value;
       try {
+        // eslint-disable-next-line
         const result = eval(command);
         console.log(result);
       } catch (error) {

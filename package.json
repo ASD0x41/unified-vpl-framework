@@ -19,6 +19,7 @@
     "crypto-browserify": "^3.12.1",
     "dotenv": "^16.4.7",
     "electron-is-dev": "^3.0.1",
+    "fabric": "5.4.2",
     "path-browserify": "^1.0.1",
     "react": "^19.0.0",
     "react-app-rewired": "^2.2.1",
