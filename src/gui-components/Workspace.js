@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import { generateGroupedComponent } from './Library';
 import { useConnectionContext } from '../program-management/Manager.js';
 
-export default function Workspace({ onCanvasReady, draggedComponent, libComps }) {
+export default function Workspace({ onCanvasReady, draggedComponent, libComps, setSelectedComponent }) {
     const canvasRef = useRef(null);
     const vpt = useRef(null);
 
@@ -20,7 +20,7 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps })
         isDisconnecting
     } = useConnectionContext();
 
-    const PIN_RADIUS = 10;
+    const PIN_RADIUS = 20;
 
     const isNearPin = (pointer, pin, targetGroup) => {
         const distance = Math.sqrt(
@@ -29,7 +29,45 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps })
         return distance <= PIN_RADIUS;
     };
 
+
+
+    let lastActiveObject = null;
+    let pollingInterval = null;
+
+    function checkActiveObject() {
+        if (canvasRef.current) {
+            const activeObject = canvasRef.current.getActiveObject();
+
+            if (activeObject !== lastActiveObject) {
+                lastActiveObject = activeObject;
+                if (activeObject) {
+                    if (activeObject.ID) {
+                        setSelectedComponent(activeObject.ID);
+                    }
+                } else {
+                    setSelectedComponent(null);
+                }
+            }
+        }
+    }
+
+    function startPolling() {
+        if (!pollingInterval) {
+            pollingInterval = setInterval(checkActiveObject, 200);
+        }
+    }
+
+    function stopPolling() {
+        if (pollingInterval) {
+            clearInterval(pollingInterval);
+            pollingInterval = null;
+        }
+    }
+
+
+
     const handleGroupClick = (e) => {
+
         if (isConnecting.current) {
             const canvasInstance = canvasRef.current;
             const pointer = canvasInstance.getPointer(e.e);
@@ -49,7 +87,6 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps })
             canvasInstance.discardActiveObject()
 
             if (clickedPin) {
-                
                 if (isConnecting.current && srcGroup.current && srcPin.current) {
                     if (!components.current[targetGroup.ID].pins[clickedPin.idx]) {
                         if ((srcPin.current.idx[0] === '@' && clickedPin.idx[0] === '$') || (srcPin.current.idx[0] === '$' && clickedPin.idx[0] === '@')) {
@@ -59,7 +96,6 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps })
                             drawLineBetweenPins(canvasInstance, srcPin.current, srcGroup.current, dstPin.current, dstGroup.current);
                             components.current[srcGroup.current.ID].pins[srcPin.current.idx] = [dstGroup.current.ID, dstPin.current.idx];
                             components.current[dstGroup.current.ID].pins[dstPin.current.idx] = [srcGroup.current.ID, srcPin.current.idx];
-                            
                             srcPin.current.set('fill', 'red');
                             dstPin.current.set('fill', 'red');
 
@@ -87,9 +123,9 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps })
                         console.log("Pin is already in use. Select another pin.");
                     }
                 }
-                
             } else {
                 console.log("Please click near a pin to select it.");
+                isConnecting.current = false;
             }
 
 
@@ -113,17 +149,15 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps })
             canvasInstance.discardActiveObject()
 
             if (clickedPin) {
-                
                 if (isDisconnecting.current && srcGroup.current && srcPin.current) {
                     if (components.current[targetGroup.ID].pins[clickedPin.idx]) {
                         dstGroup.current = targetGroup;
                         dstPin.current = clickedPin;
 
-                        const done = deleteLineBetweenPins(canvasInstance, srcPin.current, dstPin.current);
+                        const done = deleteLineBetweenPins(canvasInstance, connections, srcPin.current, dstPin.current);
                         if (done) {
                             components.current[srcGroup.current.ID].pins[srcPin.current.idx] = null;
                             components.current[dstGroup.current.ID].pins[dstPin.current.idx] = null;
-                            
                             srcPin.current.set('fill', 'white');
                             dstPin.current.set('fill', 'white');
                         }
@@ -150,9 +184,9 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps })
                         console.log("Pin is already NOT in use. Select another pin.");
                     }
                 }
-                
             } else {
                 console.log("Please click near a pin to select it.");
+                isDisconnecting.current = false;
             }
         }
     };
@@ -257,6 +291,121 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps })
                 }
                 points.push({ x: pin2X - 100, y: pin2Y });
             }
+        } else if (pin1.side === "top" && pin2.side === "left") {
+            if (pin1Y > pin2Y) {
+                if (pin1X < pin2X) {
+                    points.push({ x: pin1X, y: pin2Y });
+                } else {
+                    points.push({ x: pin1X, y: pin2Y - 75 });
+                    points.push({ x: pin2X - 100, y: pin2Y - 75 });
+                    points.push({ x: pin2X - 100, y: pin2Y });
+                }
+            } else {
+                points.push({ x: pin1X, y: pin1Y - 50 });
+                if (pin1X < pin2X) {
+                    points.push({ x: pin1X - 100, y: pin1Y - 50 });
+                    points.push({ x: pin1X - 100, y: pin2Y });
+                } else {
+                    points.push({ x: pin2X - 100, y: pin1Y - 50 });
+                    points.push({ x: pin2X - 100, y: pin2Y });
+                }
+            }
+        } else if (pin1.side === "left" && pin2.side === "top") {
+            if (pin1Y < pin2Y) {
+                if (pin1X > pin2X) {
+                    points.push({ x: pin2X, y: pin1Y });
+                } else {
+                    points.push({ x: pin1X - 100, y: pin1Y });
+                    points.push({ x: pin1X - 100, y: pin1Y - 75 });
+                    points.push({ x: pin2X, y: pin1Y - 75 });
+                }
+            } else {
+                points.push({ x: pin1X, y: pin1Y + 50 });
+                if (pin1X > pin2X) {
+                    points.push({ x: pin2X - 100, y: pin1Y });
+                    points.push({ x: pin2X - 100, y: pin2Y - 50 });
+                } else {
+                    points.push({ x: pin1X - 100, y: pin1Y });
+                    points.push({ x: pin1X - 100, y: pin2Y - 50 });
+                }
+                points.push({ x: pin2X, y: pin2Y - 50 });
+            }
+        } else if (pin1.side === "top" && pin2.side === "right") {
+            if (pin1Y > pin2Y) {
+                if (pin1X > pin2X) {
+                    points.push({ x: pin1X, y: pin2Y });
+                } else {
+                    points.push({ x: pin1X, y: pin2Y - 75 });
+                    points.push({ x: pin2X + 100, y: pin2Y - 75 });
+                    points.push({ x: pin2X + 100, y: pin2Y });
+                }
+            } else {
+                points.push({ x: pin1X, y: pin1Y - 50 });
+                if (pin1X < pin2X) {
+                    points.push({ x: pin2X + 100, y: pin1Y - 50 });
+                    points.push({ x: pin2X + 100, y: pin2Y });
+                } else {
+                    points.push({ x: pin1X + 100, y: pin1Y - 50 });
+                    points.push({ x: pin1X + 100, y: pin2Y });
+                }
+            }
+        } else if (pin1.side === "right" && pin2.side === "top") {
+            if (pin1Y < pin2Y) {
+                if (pin1X < pin2X) {
+                    points.push({ x: pin2X, y: pin1Y });
+                } else {
+                    points.push({ x: pin1X + 100, y: pin1Y });
+                    points.push({ x: pin1X + 100, y: pin1Y - 75 });
+                    points.push({ x: pin2X, y: pin1Y - 75 });
+                }
+            } else {
+                if (pin1X < pin2X) {
+                    points.push({ x: pin2X + 100, y: pin1Y });
+                    points.push({ x: pin2X + 100, y: pin2Y - 50 });
+                } else {
+                    points.push({ x: pin1X + 100, y: pin1Y });
+                    points.push({ x: pin1X + 100, y: pin2Y - 50 });
+                }
+                points.push({ x: pin2X, y: pin2Y - 50 });
+            }
+        } else if (pin1.side === "bottom" && pin2.side === "left") {
+            if (pin1Y < pin2Y) {
+                if (pin1X < pin2X) {
+                    points.push({ x: pin1X, y: pin2Y });
+                } else {
+                    points.push({ x: pin1X, y: pin2Y + 75 });
+                    points.push({ x: pin2X - 100, y: pin2Y + 75 });
+                    points.push({ x: pin2X - 100, y: pin2Y });
+                }
+            } else {
+                points.push({ x: pin1X, y: pin1Y + 50 });
+                if (pin1X < pin2X) {
+                    points.push({ x: pin1X - 100, y: pin1Y + 50 });
+                    points.push({ x: pin1X - 100, y: pin2Y });
+                } else {
+                    points.push({ x: pin2X - 100, y: pin1Y + 50 });
+                    points.push({ x: pin2X - 100, y: pin2Y });
+                }
+            }
+        } else if (pin1.side === "left" && pin2.side === "bottom") {
+            if (pin1Y > pin2Y) {
+                if (pin1X > pin2X) {
+                    points.push({ x: pin2X, y: pin1Y });
+                } else {
+                    points.push({ x: pin1X - 100, y: pin1Y });
+                    points.push({ x: pin1X - 100, y: pin1Y + 75 });
+                    points.push({ x: pin2X, y: pin1Y + 75 });
+                }
+            } else {
+                if (pin1X > pin2X) {
+                    points.push({ x: pin2X - 100, y: pin1Y });
+                    points.push({ x: pin2X - 100, y: pin2Y + 50 });
+                } else {
+                    points.push({ x: pin1X - 100, y: pin1Y });
+                    points.push({ x: pin1X - 100, y: pin2Y + 50 });
+                }
+                points.push({ x: pin2X, y: pin2Y + 50 });
+            }
         }
 
         points.push({ x: pin2X, y: pin2Y });
@@ -266,15 +415,21 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps })
     const drawLineBetweenPins = (canvasInstance, pin1, grp1, pin2, grp2) => {
         const points = computePoints(pin1, grp1, pin2, grp2);
 
-        const line = new fabric.Polyline(points, {
-            fill: '',
+        const line = new fabric.Polyline([{ x: -canvasInstance.width, y: -canvasInstance.height }, { x: 2 * canvasInstance.width, y: 2 * canvasInstance.height }], {
+            fill: 'transparent',
             stroke: 'red',
-            strokeWidth: 1,
+            strokeWidth: 2,
             selectable: false,
             evented: false
         });
 
         canvasInstance.add(line);
+
+        line.set({
+            points: points
+        });
+
+        line.setCoords();
         line.sendBackwards();
         canvasInstance.renderAll();
 
@@ -287,37 +442,21 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps })
         });
 
         console.log("Pins connected!");
+        console.log(line);
     };
 
     const updateLinePosition = (canvasInstance, pin1, grp1, pin2, grp2, line) => {
-        const newpoints = computePoints(pin1, grp1, pin2, grp2);
+        const points = computePoints(pin1, grp1, pin2, grp2);
 
         line.set({
-            points: newpoints
+            points: points
         });
 
         line.setCoords();
-        canvasInstance.requestRenderAll();
+        canvasInstance.renderAll();
     }
 
-    const deleteLineBetweenPins = (canvasInstance, srcPin, dstPin) => {
-        let done = false;
-        connections.current.forEach((connection, index) => {
-            if ((connection.pin1 === srcPin && connection.pin2 === dstPin) || (connection.pin1 === dstPin && connection.pin2 === srcPin)) {
-                canvasInstance.remove(connection.line);
-
-                connections.current.splice(index, 1);
-                canvasInstance.renderAll();
-
-                console.log('Line removed between pins:', srcPin, dstPin);
-                done = true;
-            }
-        });
-        return done;
-    };
-
-
-
+    
     const canvas_vp_count = 9
 
     useEffect(() => {
@@ -332,8 +471,14 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps })
         });
 
         fabric.Object.prototype.hasControls = false;
+        canvas.preserveObjectStacking = true;
+        canvas.selection = true;
+
+
 
         addGridToCanvas(canvas, 20);
+
+        startPolling();
 
         canvas.on('mouse:wheel', function (opt) {
             var delta = opt.e.deltaY;
@@ -395,7 +540,15 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps })
                     this.requestRenderAll();
                     this.lastPosY = e.clientY;
                 }
+
                 //   canvas.defaultCursor = 'grabbing';
+
+                const allObjects = canvas.getObjects();
+                allObjects.forEach(object => {
+                    object.setCoords();
+                });
+
+                canvas.renderAll();
             }
         });
 
@@ -421,20 +574,24 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps })
                         updateLinePosition(canvas, connection.pin1, connection.grp1, connection.pin2, connection.grp2, connection.line);
                 });
             });
+
+            movingObject.getObjects().forEach((obj) => {
+                if (obj.type === 'group') {
+                    const pins = obj.getObjects().filter(obj => obj.type === 'circle' && obj.idx !== null);
+
+                    connections.current.forEach((connection) => {
+                        pins.forEach((pin) => {
+                            if (connection.pin1 === pin || connection.pin2 === pin)
+                                updateLinePosition(canvas, connection.pin1, connection.grp1, connection.pin2, connection.grp2, connection.line);
+                        });
+                    });
+                }
+            })
         });
 
         vpt.current = canvas.viewportTransform;
         canvasRef.current = canvas;
 
-        var rect = new fabric.Rect({
-            left: -25,
-            top: -25,
-            fill: 'red',
-            width: 50,
-            height: 50
-        });
-
-        canvas.add(rect);
         canvas.renderAll();
 
 
@@ -443,6 +600,7 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps })
         }
 
         return () => {
+            stopPolling();
             canvas.dispose();
         };
     }, []);
@@ -475,13 +633,14 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps })
                         id: id,
                         props: {},
                         pins: {},
-                        visual: group
+                        visual: group,
+                        code: compdef.code
                     }
 
                     const compDef = compdef;
 
                     compDef.props.forEach((prop, index) => {
-                        comp.props[`#${index + 1}`] = prop;
+                        comp.props[`#${index + 1}`] = [prop, ''];
                     });
 
                     compDef.inpins.forEach((pin, index) => {
@@ -492,7 +651,7 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps })
                         comp.pins[`$${index + 1}`] = null;
                     });
 
-                    console.log(comp);
+                    // console.log(comp);
                     components.current.push(comp)
 
                     canvasInstance.add(comp.visual);
@@ -576,3 +735,19 @@ export function changeZoom(zoom, oldzoom, thecanvas) {
 
     thecanvas.renderAll();
 }
+
+export function deleteLineBetweenPins(canvasInstance, connections, srcPin, dstPin) {
+    let done = false;
+    connections.current.forEach((connection, index) => {
+        if ((connection.pin1 === srcPin && connection.pin2 === dstPin) || (connection.pin1 === dstPin && connection.pin2 === srcPin)) {
+            canvasInstance.remove(connection.line);
+
+            connections.current.splice(index, 1);
+            canvasInstance.renderAll();
+
+            console.log('Line removed between pins:', srcPin, dstPin);
+            done = true;
+        }
+    });
+    return done;
+};

@@ -1,5 +1,4 @@
 import './MenuBar.css';
-import { fabric } from 'fabric';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -8,28 +7,29 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import { changeZoom } from './Workspace';
+import { deleteLineBetweenPins } from './Workspace';
 import { useConnectionContext } from '../program-management/Manager.js';
+import { Compiler } from '../program-management/Compiler.js'
 
-export default function MenuBar({ clearConsole, canvas, loadComponents }) {
-    const { isConnecting, isDisconnecting } = useConnectionContext();
+export default function MenuBar({ clearConsole, canvas, loadComponents, setSelectedComponent }) {
+    const { isConnecting, isDisconnecting, components, connections } = useConnectionContext();
+    const { compileProgram } = Compiler(components);
 
     const connectionMode = () => {
-        isConnecting.current = !isConnecting.current;
-        if (isConnecting.current)
-            isDisconnecting.current = false;
+        isConnecting.current = true;
+        isDisconnecting.current = false;
     };
 
     const disconnectionMode = () => {
-        isDisconnecting.current = !isDisconnecting.current;
-        if (isDisconnecting.current)
-            isConnecting.current = false;
+        isDisconnecting.current = true;
+        isConnecting.current = false;
     };
 
     const backToCenter = () => {
         if (canvas.current) {
-        canvas.current.viewportTransform[4] = canvas.current.viewportTransform[5] = 0;
-        canvas.current.viewportTransform[0] = canvas.current.viewportTransform[3] = 1;
-        canvas.current.renderAll();
+            canvas.current.viewportTransform[4] = canvas.current.viewportTransform[5] = 0;
+            canvas.current.viewportTransform[0] = canvas.current.viewportTransform[3] = 1;
+            canvas.current.renderAll();
         }
     }
 
@@ -48,6 +48,34 @@ export default function MenuBar({ clearConsole, canvas, loadComponents }) {
     const delObject = () => {
         const activeObject = canvas.current.getActiveObject();
         if (activeObject) {
+            const ID = activeObject.ID;
+            setSelectedComponent(null);
+
+            const compObj = components.current[ID];
+            Object.keys(compObj.pins).forEach((pin) => {
+                if (compObj.pins[pin]) {
+                    let otherObj = compObj.pins[pin][0];
+                    let otherPin = compObj.pins[pin][1];
+                    components.current[otherObj].pins[otherPin] = null;
+                    compObj.pins[pin] = null;
+                }
+            });
+
+            components.current[ID] = null;
+
+            const pins = activeObject.getObjects().filter(obj => obj.type === 'circle' && obj.idx !== null);
+            pins.forEach((pin) => {
+                connections.current.forEach((connection, index) => {
+                    if (connection.pin1 === pin) {
+                        connection.pin2.set('fill', 'white');
+                        deleteLineBetweenPins(canvas.current, connections, pin, connection.pin2);
+                    } else if (connection.pin2 === pin) {
+                        connection.pin1.set('fill', 'white');
+                        deleteLineBetweenPins(canvas.current, connections, pin, connection.pin1);
+                    }
+                });
+            });
+
             canvas.current.remove(activeObject);
         }
     }
@@ -90,6 +118,22 @@ export default function MenuBar({ clearConsole, canvas, loadComponents }) {
         };
 
         reader.readAsText(file);
+    };
+
+    
+    const downloadCode = () => {
+        let code = compileProgram();
+
+        const blob = new Blob([code], { type: 'text/plain' });
+        const link = document.createElement("a");
+
+        link.href = URL.createObjectURL(blob);
+        link.download = "script.py";
+
+        document.body.appendChild(link);
+        // link.click();
+
+        document.body.removeChild(link);
     };
 
     return (
@@ -138,7 +182,7 @@ export default function MenuBar({ clearConsole, canvas, loadComponents }) {
                 <button className="icon-button" title="Clear Console" id="clear-console" onClick={clearConsole}>
                     <FontAwesomeIcon icon={faEdit} />
                 </button>
-                <button className="icon-button" title="Compile & Download Code">
+                <button className="icon-button" title="Compile & Download Code" onClick={downloadCode}>
                     <FontAwesomeIcon icon={faCode} />
                 </button>
                 <button className="icon-button" title="Compile & Execute Code">
