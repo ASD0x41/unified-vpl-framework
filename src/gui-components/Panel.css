@@ -2,7 +2,6 @@
     grid-column: 3 / 5;
     grid-row: 3 / 5;
 
-    /* background-color: #888; */
     background-color: #444;
     color: white;
 
@@ -25,7 +24,7 @@
     margin: 10px 10px 10px 10px;
     padding: 10px;
     overflow-y: auto;
-    overflow-x: auto;
+    overflow-x: hidden;
 
     height: calc(100% - 50px);
     width: calc(100% - 20px);
@@ -34,4 +33,84 @@
     border-radius: 10px;
 
     font-family: monospace;
+}
+
+#panel-output::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+#panel-output::-webkit-scrollbar-track {
+    background: #333;
+}
+
+#panel-output::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 10px;
+    border: 2px solid #333;
+}
+
+#panel-output::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}
+
+#panel-output::-webkit-scrollbar-corner {
+    background-color: #333;
+}
+
+.table-container {
+    display: table;
+    width: 100%;
+    border-spacing: 0;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.table-row {
+    display: table-row;
+    margin-bottom: 5px;
+    width: 100%;
+}
+
+.table-cell {
+    display: table-cell;
+    padding: 5px;
+    border: 1px solid #444;
+    vertical-align: middle;
+    word-wrap: break-word;
+    width: 55%;
+}
+
+.read-only-cell {
+    display: table-cell;
+    padding: 5px;
+    border: 1px solid #444;
+    vertical-align: middle;
+    word-wrap: break-word;
+    background-color: #333;
+    font-weight: bold;
+    text-align: center;
+    vertical-align: middle;
+    word-wrap: break-word;
+    width: 30%;
+}
+
+textarea {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    background-color: #444;
+    color: #fff;
+    border-radius: 4px;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    resize: none;
+    height: auto;
+    overflow-y: auto;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: #007bff;
 }
