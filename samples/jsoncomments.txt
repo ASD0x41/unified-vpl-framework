@@ -1,0 +1,26 @@
+"id": "condition",
+            "label": "If-Else",
+            "style": {
+                "type": "polygon",
+                "points": [
+                    { "x": 0, "y": 0 }, tl block
+                    { "x": 45, "y": 0 }, notch start
+                    { "x": 50, "y": 5 }, notch dip
+                    { "x": 55, "y": 0 }, notch end
+                    { "x": 100, "y": 0 },tr block 
+                    { "x": 100, "y": 50 }, tr cav
+                    { "x": 80, "y": 50 }, notch end cav
+                    { "x": 75, "y": 55 }, notch dip cav
+                    { "x": 70, "y": 50 }, notch start cav
+                    { "x": 25, "y": 50 }, tl cav
+                    { "x": 25, "y": 75 }, bl cav 
+                    { "x": 70, "y": 75 }, notch start cav
+                    { "x": 75, "y": 80 },notch dip cav
+                    { "x": 80, "y": 75 }, notch end cav
+                    { "x": 100, "y": 75 }, br cav
+                    { "x": 100, "y": 100 }, br block
+                    { "x": 55, "y": 100 }, notch end 
+                    { "x": 50, "y": 105 }, notch dip
+                    { "x": 45, "y": 100 }, notch start
+                    { "x": 0, "y": 100 } bl block
+                ],
