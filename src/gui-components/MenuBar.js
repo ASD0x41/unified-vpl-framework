@@ -166,7 +166,7 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
 
     
     const downloadCode = () => {
-        let code = compileProgram();
+        let code = compileProgram(lang);
 
         const blob = new Blob([code], { type: 'text/plain' });
         const link = document.createElement("a");
@@ -175,7 +175,7 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
         link.download = "script.py";
 
         document.body.appendChild(link);
-        link.click();
+        //link.click();
 
         document.body.removeChild(link);
     };

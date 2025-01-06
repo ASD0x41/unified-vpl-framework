@@ -1,5 +1,5 @@
 {
-    "name": "my_dataflow_based_vpl",
+    "name": "DataLang",
     "type": "dataflow",
     "version": "0.1.0",
     "components": [
@@ -51,7 +51,7 @@
         },
         {
             "id": "literal",
-            "label": "String",
+            "label": "Const",
             "style": {
                 "type": "rect",
                 "left": 0,
@@ -61,7 +61,7 @@
                 "fill": "purple"
             },
             "text": {
-                "content": "String Literal",
+                "content": "Constant",
                 "fontSize": 14,
                 "fill": "white",
                 "textAlign": "center",
@@ -71,7 +71,7 @@
             "inpins": [],
             "outpins": [[50,50,"bottom"]],
             "props": ["value"],
-            "code": "\"#1\""
+            "code": "$1 = #1"
         },
         {
             "id": "condition",

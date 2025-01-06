@@ -276,7 +276,7 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
             line: line
         });
 
-        console.log("Pins connected!");
+        // console.log("Pins connected!");
     };
 
     const updateLinePosition = (canvasInstance, pin1, grp1, pin2, grp2, line) => {
