@@ -81,11 +81,41 @@
     width: 55%;
 }
 
+.langblock {
+    border: 5px solid #444; 
+    padding: 10px;
+}
+
+.langhead {
+    font-family: Georgia, serif;
+    display: block;
+    padding: 5px;
+    word-wrap: break-word;
+    background-color: #333;
+    text-align: center;
+    word-wrap: break-word;
+    width: 100%;
+    margin-top: 0;
+    margin-bottom: 0%;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.langheadnull {
+    display: block;
+    font-family: Georgia, serif;
+    padding: 5px;
+    word-wrap: break-word;
+    background-color: #333;
+    text-align: center;
+    word-wrap: break-word;
+    width: 100%;
+}
+
 .read-only-cell {
     display: table-cell;
     padding: 5px;
     border: 1px solid #444;
-    vertical-align: middle;
     word-wrap: break-word;
     background-color: #333;
     font-weight: bold;

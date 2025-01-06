@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import { useConnectionContext } from '../program-management/Manager.js';
 
-export default function Panel({ libLevel, setLibLevel, canvasProps, selectedComponent }) {
+export default function Panel({ libLevel, setLibLevel, canvasProps, selectedComponent, lang }) {
     const [collapse, setCollapse] = useState(false);
     const [textValues, setTextValues] = useState({});
     const { components } = useConnectionContext();
@@ -49,6 +49,17 @@ export default function Panel({ libLevel, setLibLevel, canvasProps, selectedComp
             </div>
             {!collapse && (
                 <div id="panel-output">
+                    {lang ? <div>
+                        <div className='langblock'>
+                        <div className="langhead">{lang.name}</div>
+                        <div className="langhead">
+                            {lang.type === 'flowchart' ? '(Flowchart-Based VPL)' :
+                                (lang.type === 'dataflow' ? '(Dataflow-Based VPL)' : '(Block-Based VPL)')}
+                        </div>
+                        </div>
+                        <br />
+                    </div> :
+                        <div className="langheadnull">NO LANGUAGE LOADED</div>}
                     {selectedComponent && Object.keys(components.current[selectedComponent].props).map((key) => (
                         <div className="table-row" key={key}>
                             <div className="read-only-cell">{components.current[selectedComponent].props[key][0]}</div>

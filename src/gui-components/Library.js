@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
-export default function Library({ libLevel, components, onDragStart }) {
+export default function Library({ libLevel, libcomponents, onDragStart }) {
     const [collapse, setCollapse] = useState(false);
 
 
@@ -26,7 +26,7 @@ export default function Library({ libLevel, components, onDragStart }) {
             {!collapse && (
 
                 <div id="library-output">
-                    {Object.entries(components).map(([id, obj], index) => {
+                    {Object.entries(libcomponents).map(([id, obj], index) => {
                         let canvasWidth = obj.dimensions[0] + 10;
                         let canvasHeight = obj.dimensions[1] + 10;
 
@@ -126,7 +126,7 @@ export function generateGroupedComponent(obj) {
                 fill: color,
                 left: x,
                 top: y,
-                selectable: true,
+                selectable: false,
                 originX: 'center',
                 originY: 'center',
                 stroke: 'black',

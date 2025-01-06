@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 export default function Console({ logMessages, setLogMessages }) {
-  const [collapse, setCollapse] = useState(false);
+  const [collapse, setCollapse] = useState(true);
   const consoleInputRef = useRef(null);
   const consoleOutputRef = useRef(null);
 

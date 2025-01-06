@@ -1,12 +1,23 @@
-export function LoadLanguage(json, loadComponents) {
-    const Json = JSON.parse(json);
-    const comps = Json["components"];
+export function Loader() {
+    const LoadLanguage = (json, loadComponents) => {
+        const Json = JSON.parse(json);
+        const comps = Json["components"];
 
-    comps.forEach(component => {
-        const id = component.id;
-        loadComponents(prevComponents => ({
-            ...prevComponents,
-            [id]: component
-        }));
-    });
+        loadComponents(null);
+    
+        comps.forEach(component => {
+            const id = component.id;
+            loadComponents(prevComponents => ({
+                ...prevComponents,
+                [id]: component
+            }));
+        });
+
+        console.log("comps loaded");
+
+        return { name: Json["name"], type: Json["type"] };
+    };
+
+    return { LoadLanguage };
 };
+

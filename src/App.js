@@ -9,14 +9,20 @@ import Library from './gui-components/Library.js'
 import Console from './gui-components/Console.js'
 import Panel from './gui-components/Panel.js'
 
-import { LoadLanguage } from './program-management/Loader.js';
+import { Loader } from './program-management/Loader.js';
 import { Manager } from './program-management/Manager.js';
 
 function App() {
+  const { LoadLanguage } = Loader();
+  const [lang, setLang] = useState({name: 'DataLang', type: 'dataflow'});
   const [libExtension, setLibExtension] = useState(false);
   const [logMessages, setLogMessages] = useState([]);
-  // const [libraryComponents, setLibraryComponents] = useState({});
-  const [libraryComponents, setLibraryComponents] = useState({ "main": { "id": "main", "label": "Start", "style": { "type": "rect", "left": 0, "top": 0, "width": 100, "height": 50, "fill": "black" }, "text": { "content": "Start", "fontSize": 14, "fill": "white", "textAlign": "center", "area": [[0, 0], [100, 50]] }, "dimensions": [100, 50], "inpins": [], "outpins": [[50, 50, "bottom"]], "props": [], "code": "$1" }, "input": { "id": "input", "label": "Read", "style": { "type": "rect", "left": 0, "top": 0, "width": 100, "height": 50, "fill": "blue" }, "text": { "content": "Read", "fontSize": 14, "fill": "white", "textAlign": "center", "area": [[0, 0], [100, 50]] }, "dimensions": [100, 50], "inpins": [[50, 0, "top"]], "outpins": [[50, 50, "bottom"]], "props": ["varname", "prompt"], "code": "#1 = input(#2)\n$1" }, "output": { "id": "output", "label": "Write", "style": { "type": "rect", "left": 0, "top": 0, "width": 100, "height": 50, "fill": "green" }, "text": { "content": "Write", "fontSize": 14, "fill": "white", "textAlign": "center", "area": [[0, 0], [100, 50]] }, "dimensions": [100, 50], "inpins": [[50, 0, "top"]], "outpins": [[50, 50, "bottom"]], "props": ["content"], "code": "print(#1)\n$1" }, "condition": { "id": "condition", "label": "If-Else", "style": { "type": "rect", "left": 0, "top": 0, "width": 100, "height": 50, "fill": "red" }, "text": { "content": "If-Else", "fontSize": 14, "fill": "black", "textAlign": "center", "area": [[0, 0, "top"], [100, 50, "top"]] }, "dimensions": [100, 50], "inpins": [[50, 0, "top"]], "outpins": [[25, 50, "bottom"], [75, 50, "bottom"]], "props": ["condition"], "code": "if #1:\n\t$1\nelse:\n\t$2" } });
+
+  // Flowchart:
+  //const [libraryComponents, setLibraryComponents] = useState({ "main": { "id": "main", "label": "Start", "style": { "type": "rect", "left": 0, "top": 0, "width": 100, "height": 50, "fill": "black" }, "text": { "content": "Start", "fontSize": 14, "fill": "white", "textAlign": "center", "area": [[0, 0], [100, 50]] }, "dimensions": [100, 50], "inpins": [], "outpins": [[50, 50, "bottom"]], "props": [], "code": "$1" }, "input": { "id": "input", "label": "Read", "style": { "type": "rect", "left": 0, "top": 0, "width": 100, "height": 50, "fill": "blue" }, "text": { "content": "User Input", "fontSize": 14, "fill": "white", "textAlign": "center", "area": [[0, 0], [100, 50]] }, "dimensions": [100, 50], "inpins": [[50, 0, "top"]], "outpins": [[50, 50, "bottom"]], "props": ["varname", "prompt"], "code": "#1 = input(#2)\n$1" }, "output": { "id": "output", "label": "Write", "style": { "type": "rect", "left": 0, "top": 0, "width": 100, "height": 50, "fill": "green" }, "text": { "content": "Output", "fontSize": 14, "fill": "white", "textAlign": "center", "area": [[0, 0], [100, 50]] }, "dimensions": [100, 50], "inpins": [[50, 0, "top"]], "outpins": [[50, 50, "bottom"]], "props": ["content"], "code": "print(#1)\n$1" }, "condition": { "id": "condition", "label": "If-Else", "style": { "type": "polygon", "points": [{ "x": 50, "y": 0 }, { "x": 100, "y": 50 }, { "x": 50, "y": 100 }, { "x": 0, "y": 50 }], "left": 0, "top": 0, "width": 100, "height": 100, "fill": "red" }, "text": { "content": "If-Else", "fontSize": 14, "fill": "black", "textAlign": "center", "area": [[0, 0], [100, 100]] }, "dimensions": [100, 100], "inpins": [[50, 0, "top"]], "outpins": [[0, 50, "left"], [100, 50, "right"]], "props": ["condition"], "code": "if #1:\n\t$1\nelse:\n\t$2" } });
+  
+  // Dataflow:
+  const [libraryComponents, setLibraryComponents] = useState({ "input": { "id": "input", "label": "Read", "style": { "type": "circle", "left": 0, "top": 0, "radius": 25, "fill": "blue" }, "text": { "content": "Input", "fontSize": 14, "fill": "white", "textAlign": "center", "area": [[0, 0], [50, 50]] }, "dimensions": [50, 50], "inpins": [], "outpins": [[25, 50, "bottom"]], "props": ["prompt"], "code": "$1 = input(#1)" }, "output": { "id": "output", "label": "Write", "style": { "type": "circle", "left": 0, "top": 0, "radius": 25, "fill": "green" }, "text": { "content": "Output", "fontSize": 14, "fill": "white", "textAlign": "center", "area": [[0, 0], [50, 50]]}, "dimensions": [50, 50], "inpins": [[25, 0, "top"]], "outpins": [], "props": [], "code": "print(@1)" }, "literal": { "id": "literal", "label": "String", "style": { "type": "rect", "left": 0, "top": 0, "width": 100, "height": 50, "fill": "purple" }, "text": { "content": "String Literal", "fontSize": 14, "fill": "white", "textAlign": "center", "area": [[0, 0], [100, 50]] }, "dimensions": [100, 50], "inpins": [], "outpins": [[50, 50, "bottom"]], "props": ["value"], "code": "\"#1\"" }, "condition": { "id": "condition", "label": "If-Else", "style": { "type": "polygon", "points": [{ "x": 50, "y": 0 }, { "x": 100, "y": 50 }, { "x": 50, "y": 100 }, { "x": 0, "y": 50 }], "left": 0, "top": 0, "width": 100, "height": 100, "fill": "red" }, "text": { "content": "Selector", "fontSize": 14, "fill": "black", "textAlign": "center", "area": [[0, 0], [100, 100]] }, "dimensions": [100, 100], "inpins": [[50, 0, "top"], [0, 50, "left"], [100, 50, "right"]], "outpins": [[50, 100, "bottom"]], "props": [], "code": "if @1:\n\t$1 = @2\nelse:\n\t$1 = @3" }, "equality": { "id": "equality", "label": "IsEqual?", "style": { "type": "polygon", "points": [{ "x": 25, "y": 0 }, { "x": 50, "y": 25 }, { "x": 25, "y": 50 }, { "x": 0, "y": 25 }], "left": 0, "top": 0, "width": 50, "height": 50, "fill": "red" }, "text": { "content": "==", "fontSize": 14, "fill": "black", "textAlign": "center", "area": [[0, 0], [50, 50]]}, "dimensions": [50, 50], "inpins": [[0, 25, "left"], [50, 25, "right"]], "outpins": [[25, 50, "bottom"]], "props": [], "code": "$1 = @1 == @2" } });
 
   const [draggedComponent, setDraggedComponent] = useState(null);
   const [selectedComponent, setSelectedComponent] = useState(null);
@@ -87,19 +93,19 @@ function App() {
   };
 
   const loadVisualLang = (json) => {
-    LoadLanguage(json, setLibraryComponents);
-    // console.log(JSON.stringify(libraryComponents))
+    const loadedLang = LoadLanguage(json, setLibraryComponents);
+    setLang(loadedLang);
   };
 
   return (
     <Manager>
       <div className="App">
         <Header />
-        <MenuBar clearConsole={clearConsole} canvas={canvasRef} loadComponents={loadVisualLang} setSelectedComponent={setSelectedComponent}/>
-        <Workspace onCanvasReady={handleCanvasReady} draggedComponent={draggedComponent} libComps={libraryComponents} setSelectedComponent={setSelectedComponent}/>
-        <Library libLevel={libExtension} components={libraryComponents} onDragStart={setDraggedComponent} />
+        <MenuBar clearConsole={clearConsole} canvas={canvasRef} loadComponents={loadVisualLang} setSelectedComponent={setSelectedComponent} lang={lang} libComps={libraryComponents} />
+        <Workspace onCanvasReady={handleCanvasReady} draggedComponent={draggedComponent} libComps={libraryComponents} setSelectedComponent={setSelectedComponent} lang={lang} />
+        <Library libLevel={libExtension} libcomponents={libraryComponents} onDragStart={setDraggedComponent} />
         <Console logMessages={logMessages} setLogMessages={setLogMessages} />
-        <Panel libLevel={libExtension} setLibLevel={setLibExtension} canvasProps={canvasProps} selectedComponent={selectedComponent} />
+        <Panel libLevel={libExtension} setLibLevel={setLibExtension} canvasProps={canvasProps} selectedComponent={selectedComponent} lang={lang} />
       </div>
     </Manager>
   );

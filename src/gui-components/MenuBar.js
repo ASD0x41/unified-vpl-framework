@@ -7,22 +7,33 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import { changeZoom } from './Workspace';
-import { deleteLineBetweenPins } from './Workspace';
+import { deleteLineBetweenPins, addGridToCanvas } from './Workspace';
 import { useConnectionContext } from '../program-management/Manager.js';
 import { Compiler } from '../program-management/Compiler.js'
 
-export default function MenuBar({ clearConsole, canvas, loadComponents, setSelectedComponent }) {
-    const { isConnecting, isDisconnecting, components, connections } = useConnectionContext();
+export default function MenuBar({ clearConsole, canvas, loadComponents, setSelectedComponent, lang, libComps }) {
+    const { 
+        ObjectCounter,
+        connections,
+        components,
+        isConnecting,
+        srcGroup,
+        srcPin,
+        dstGroup,
+        dstPin,
+        isDisconnecting } = useConnectionContext();
     const { compileProgram } = Compiler(components);
 
     const connectionMode = () => {
         isConnecting.current = true;
         isDisconnecting.current = false;
+        canvas.current.hoverCursor = 'pointer';
     };
 
     const disconnectionMode = () => {
         isDisconnecting.current = true;
         isConnecting.current = false;
+        canvas.current.hoverCursor = 'pointer';
     };
 
     const backToCenter = () => {
@@ -54,29 +65,49 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
             const compObj = components.current[ID];
             Object.keys(compObj.pins).forEach((pin) => {
                 if (compObj.pins[pin]) {
-                    let otherObj = compObj.pins[pin][0];
-                    let otherPin = compObj.pins[pin][1];
-                    components.current[otherObj].pins[otherPin] = null;
+                    compObj.pins[pin].forEach((conn) => {
+                        let otherObj = conn[0];
+                        let otherPin = conn[1];
+
+                        if (components.current[otherObj].pins[otherPin].length === 1)
+                            components.current[otherObj].pins[otherPin] = null;
+                        else
+                            components.current[otherObj].pins[otherPin] = components.current[otherObj].pins[otherPin].filter(obj => !(obj[0] === ID && obj[1] === pin));
+                    });
                     compObj.pins[pin] = null;
                 }
             });
 
-            components.current[ID] = null;
+            const pins = activeObject.getObjects().filter(obj => obj.idx && (obj.idx[0] === '$' || obj.idx[0] === '@'));
 
-            const pins = activeObject.getObjects().filter(obj => obj.type === 'circle' && obj.idx !== null);
             pins.forEach((pin) => {
                 connections.current.forEach((connection, index) => {
-                    if (connection.pin1 === pin) {
-                        connection.pin2.set('fill', 'white');
-                        deleteLineBetweenPins(canvas.current, connections, pin, connection.pin2);
-                    } else if (connection.pin2 === pin) {
-                        connection.pin1.set('fill', 'white');
-                        deleteLineBetweenPins(canvas.current, connections, pin, connection.pin1);
+                    
+                    if (connection.pin1 === pin || connection.pin2 === pin) {
+                        let otherPin = null;
+                        if (connection.pin1 === pin)
+                            otherPin = connection.pin2;
+                        else if (connection.pin2 === pin)
+                            otherPin = connection.pin1;
+
+                        deleteLineBetweenPins(canvas.current, connections, pin, otherPin);
+                        
+                        let remCounts = 0;
+                        for (let i = 0; i < connections.current.length; i++) {
+                            if (connections.current[i].pin1 === otherPin || connections.current[i].pin2 === otherPin)
+                                remCounts++;
+                        }
+                        if (remCounts === 0)
+                            if (connection.pin1 === pin)
+                                connection.pin2.set('fill', 'white');
+                            else if (connection.pin2 === pin)
+                                connection.pin1.set('fill', 'white');
                     }
                 });
             });
 
             canvas.current.remove(activeObject);
+            components.current[ID] = null;
         }
     }
 
@@ -87,7 +118,8 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
             return;
         }
 
-        const json = JSON.stringify(activeObject.toObject());
+        const json = JSON.stringify(libComps[activeObject.id]);
+        // const json = JSON.stringify(activeObject.toObject());
 
         const blob = new Blob([json], { type: 'application/json' });
         const link = document.createElement('a');
@@ -95,7 +127,6 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
         link.download = 'selected-object.json';
         link.click();
 
-        // Clean up
         URL.revokeObjectURL(link.href);
     };
 
@@ -111,6 +142,19 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
             try {
                 const json = e.target.result;
                 document.getElementById('load-file').value = '';
+                
+                components.current = [{}];
+                connections.current = [];
+                isConnecting.current = false;
+                isDisconnecting.current = false;
+                srcPin.current = null;
+                srcGroup.current = null;
+                dstPin.current = null;
+                dstGroup.current = null;
+
+                canvas.current.clear();
+                addGridToCanvas(canvas.current, 20);
+
                 loadComponents(json);
             } catch (error) {
                 console.error('Error loading components from JSON:', error);
@@ -131,7 +175,7 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
         link.download = "script.py";
 
         document.body.appendChild(link);
-        // link.click();
+        link.click();
 
         document.body.removeChild(link);
     };
@@ -172,10 +216,10 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
                 </button>
 
                 <input type="file" id="load-file" style={{ display: 'none' }} onChange={handleLoadComponents} />
-                <button className="icon-button" title="Load Components" id="load-btn" onClick={() => document.getElementById('load-file').click()}>
+                <button className="icon-button" title="Load Language" id="load-btn" onClick={() => document.getElementById('load-file').click()}>
                     <FontAwesomeIcon icon={faUpload} />
                 </button>
-                <button className="icon-button" title="Unload Components" id="save-btn" onClick={saveComponent}>
+                <button className="icon-button" title="Download Component" id="save-btn" onClick={saveComponent}>
                     <FontAwesomeIcon icon={faDownload} />
                 </button>
 
