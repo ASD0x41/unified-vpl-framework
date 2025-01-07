@@ -12,7 +12,7 @@ import { useConnectionContext } from '../program-management/Manager.js';
 import { Compiler } from '../program-management/Compiler.js'
 
 export default function MenuBar({ clearConsole, canvas, loadComponents, setSelectedComponent, lang, libComps }) {
-    const { 
+    const {
         ObjectCounter,
         connections,
         components,
@@ -21,7 +21,9 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
         srcPin,
         dstGroup,
         dstPin,
-        isDisconnecting } = useConnectionContext();
+        isDisconnecting,
+        forest
+    } = useConnectionContext();
     const { compileProgram } = Compiler(components);
 
     const connectionMode = () => {
@@ -40,6 +42,12 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
         if (canvas.current) {
             canvas.current.viewportTransform[4] = canvas.current.viewportTransform[5] = 0;
             canvas.current.viewportTransform[0] = canvas.current.viewportTransform[3] = 1;
+
+            const allObjects = canvas.getObjects();
+            allObjects.forEach(object => {
+                object.setCoords();
+            });
+
             canvas.current.renderAll();
         }
     }
@@ -62,12 +70,39 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
             const ID = activeObject.ID;
             setSelectedComponent(null);
 
+            console.log(components.current);
+
+            if (lang.type === 'block') {
+                let deps = [];
+
+                Object.keys(forest.current[activeObject.ID]).forEach((dep) => {
+                    deps.push(dep);
+                })
+
+                deps.push(activeObject.ID);
+
+                Object.keys(forest.current).forEach((key) => {
+                    if (!deps.includes(key)) {
+                        deps.forEach((dep) => {
+                            if (dep in forest.current[key])
+                                delete forest.current[key][dep];
+                        })
+                    }
+                })
+
+                delete forest[activeObject.ID];
+            }
+
+            // console.log(components.current[ID]);
+
             const compObj = components.current[ID];
             Object.keys(compObj.pins).forEach((pin) => {
                 if (compObj.pins[pin]) {
                     compObj.pins[pin].forEach((conn) => {
                         let otherObj = conn[0];
                         let otherPin = conn[1];
+
+                        console.log("mypin", pin ,"otherobj", otherObj, "otherpin", otherPin)
 
                         if (components.current[otherObj].pins[otherPin].length === 1)
                             components.current[otherObj].pins[otherPin] = null;
@@ -78,33 +113,36 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
                 }
             });
 
-            const pins = activeObject.getObjects().filter(obj => obj.idx && (obj.idx[0] === '$' || obj.idx[0] === '@'));
 
-            pins.forEach((pin) => {
-                connections.current.forEach((connection, index) => {
-                    
-                    if (connection.pin1 === pin || connection.pin2 === pin) {
-                        let otherPin = null;
-                        if (connection.pin1 === pin)
-                            otherPin = connection.pin2;
-                        else if (connection.pin2 === pin)
-                            otherPin = connection.pin1;
+            if (lang.type !== 'block') {
+                const pins = activeObject.getObjects().filter(obj => obj.idx && (obj.idx[0] === '$' || obj.idx[0] === '@'));
 
-                        deleteLineBetweenPins(canvas.current, connections, pin, otherPin);
-                        
-                        let remCounts = 0;
-                        for (let i = 0; i < connections.current.length; i++) {
-                            if (connections.current[i].pin1 === otherPin || connections.current[i].pin2 === otherPin)
-                                remCounts++;
-                        }
-                        if (remCounts === 0)
+                pins.forEach((pin) => {
+                    connections.current.forEach((connection, index) => {
+    
+                        if (connection.pin1 === pin || connection.pin2 === pin) {
+                            let otherPin = null;
                             if (connection.pin1 === pin)
-                                connection.pin2.set('fill', 'white');
+                                otherPin = connection.pin2;
                             else if (connection.pin2 === pin)
-                                connection.pin1.set('fill', 'white');
-                    }
+                                otherPin = connection.pin1;
+    
+                            deleteLineBetweenPins(canvas.current, connections, pin, otherPin);
+    
+                            let remCounts = 0;
+                            for (let i = 0; i < connections.current.length; i++) {
+                                if (connections.current[i].pin1 === otherPin || connections.current[i].pin2 === otherPin)
+                                    remCounts++;
+                            }
+                            if (remCounts === 0)
+                                if (connection.pin1 === pin)
+                                    connection.pin2.set('fill', 'white');
+                                else if (connection.pin2 === pin)
+                                    connection.pin1.set('fill', 'white');
+                        }
+                    });
                 });
-            });
+            }
 
             canvas.current.remove(activeObject);
             components.current[ID] = null;
@@ -142,7 +180,7 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
             try {
                 const json = e.target.result;
                 document.getElementById('load-file').value = '';
-                
+
                 components.current = [{}];
                 connections.current = [];
                 isConnecting.current = false;
@@ -164,7 +202,7 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
         reader.readAsText(file);
     };
 
-    
+
     const downloadCode = () => {
         let code = compileProgram(lang);
 
@@ -208,12 +246,16 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
                 <button className="icon-button" title="Delete Object" id="del-obj" onClick={delObject}>
                     <FontAwesomeIcon icon={faTrashAlt} />
                 </button>
-                <button className="icon-button" title="Connect Objects" id="connect-btn" onClick={connectionMode}>
-                    <FontAwesomeIcon icon={faLink} />
-                </button>
-                <button className="icon-button" title="Disconnect Objects" id="disconnect-btn" onClick={disconnectionMode}>
-                    <FontAwesomeIcon icon={faBan} />
-                </button>
+                {lang.type !== 'block' &&
+                    <button className="icon-button" title="Connect Objects" id="connect-btn" onClick={connectionMode}>
+                        <FontAwesomeIcon icon={faLink} />
+                    </button>
+                }
+                {lang.type !== 'block' &&
+                    <button className="icon-button" title="Disconnect Objects" id="disconnect-btn" onClick={disconnectionMode}>
+                        <FontAwesomeIcon icon={faBan} />
+                    </button>
+                }
 
                 <input type="file" id="load-file" style={{ display: 'none' }} onChange={handleLoadComponents} />
                 <button className="icon-button" title="Load Language" id="load-btn" onClick={() => document.getElementById('load-file').click()}>

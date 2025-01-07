@@ -25,14 +25,14 @@ export default function Panel({ libLevel, setLibLevel, canvasProps, selectedComp
     };
 
     useEffect(() => {
-        if (selectedComponent) {
+        if (selectedComponent && components.current[selectedComponent]) {
             const updatedTextValues = {};
             Object.keys(components.current[selectedComponent].props).forEach((key) => {
                 updatedTextValues[key] = components.current[selectedComponent].props[key][1];
             });
             setTextValues(updatedTextValues);
         }
-    }, [selectedComponent, components]);
+    }, [selectedComponent, components.current[selectedComponent]]);
 
     return (
         <div className="panel" style={{ gridRow: collapse ? '4 / 5' : '3 / 5' }}>
@@ -49,7 +49,7 @@ export default function Panel({ libLevel, setLibLevel, canvasProps, selectedComp
             </div>
             {!collapse && (
                 <div id="panel-output">
-                    {lang ? <div>
+                    {lang.type !== null ? <div>
                         <div className='langblock'>
                         <div className="langhead">{lang.name}</div>
                         <div className="langhead">
@@ -59,8 +59,8 @@ export default function Panel({ libLevel, setLibLevel, canvasProps, selectedComp
                         </div>
                         <br />
                     </div> :
-                        <div className="langheadnull">NO LANGUAGE LOADED</div>}
-                    {selectedComponent && Object.keys(components.current[selectedComponent].props).map((key) => (
+                        <div className='langblock'><div className="langheadnull">NO LANGUAGE LOADED</div></div>}
+                    {selectedComponent && components.current[selectedComponent] && Object.keys(components.current[selectedComponent].props).map((key) => (
                         <div className="table-row" key={key}>
                             <div className="read-only-cell">{components.current[selectedComponent].props[key][0]}</div>
                             <div className="table-cell">

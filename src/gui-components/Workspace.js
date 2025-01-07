@@ -6,6 +6,7 @@ import { useConnectionContext } from '../program-management/Manager.js';
 import { computePoints } from '../program-management/Helper.js';
 
 export default function Workspace({ onCanvasReady, draggedComponent, libComps, setSelectedComponent, lang }) {
+    const draggingBlock = useRef(false);
     const canvasRef = useRef(null);
     const vpt = useRef(null);
 
@@ -18,16 +19,17 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
         srcPin,
         dstGroup,
         dstPin,
-        isDisconnecting
+        isDisconnecting,
+        forest
     } = useConnectionContext();
 
     const PIN_RADIUS = 25;
 
-    const isNearPin = (pointer, pin, targetGroup) => {
+    const isNearPin = (pointer, pin, targetGroup, pinrad) => {
         const distance = Math.sqrt(
             Math.pow(pointer.x - (pin.left + targetGroup.left + targetGroup.width / 2), 2) + Math.pow(pointer.y - (pin.top + targetGroup.top + targetGroup.height / 2), 2)
         );
-        return distance <= PIN_RADIUS;
+        return distance <= pinrad;
     };
 
 
@@ -85,7 +87,7 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
             let clickedPin = null;
 
             for (let pin of pins) {
-                if (isNearPin(pointer, pin, targetGroup)) {
+                if (isNearPin(pointer, pin, targetGroup, PIN_RADIUS)) {
                     clickedPin = pin;
                     break;
                 }
@@ -156,7 +158,7 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
                     if (!components.current[srcGroup.current.ID].pins[srcPin.current.idx]) {
                         srcPin.current.set('fill', 'white');
                     }
-                    
+
                     srcGroup.current = null;
                     srcPin.current = null;
                 }
@@ -175,7 +177,7 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
             let clickedPin = null;
 
             for (let pin of pins) {
-                if (isNearPin(pointer, pin, targetGroup)) {
+                if (isNearPin(pointer, pin, targetGroup, PIN_RADIUS)) {
                     clickedPin = pin;
                     break;
                 }
@@ -309,8 +311,8 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
         canvas.selection = true;
 
         fabric.Object.prototype.set({
-            borderColor: 'gray'
-          });
+            borderColor: 'silver'
+        });
 
         canvas.selectionColor = 'transparent';
         canvas.selectionBorderColor = 'transparent';
@@ -361,6 +363,9 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
                 this.selection = false;
                 this.lastPosX = evt.clientX;
                 this.lastPosY = evt.clientY;
+            } else {
+                draggingBlock.current = true;
+                // canvas.bringToFront(canvas.getActiveObject());
             }
         });
 
@@ -390,12 +395,23 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
                 });
 
                 canvas.renderAll();
+            } else {
+                if (draggingBlock.current === true) {
+                    canvas.bringToFront(canvas.getActiveObject());
+                }
+
             }
         });
 
         canvas.on('mouse:up', function () {
             this.isDragging = false;
             this.selection = true;
+
+            if (draggingBlock.current) {
+                blockDropped();
+            }
+            draggingBlock.current = false;
+            canvas.sendBackwards(canvas.getActiveObject());
         });
 
         // canvas.on('mouse:over', function() {
@@ -414,25 +430,27 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
             const movingObject = e.target;
             const pins = movingObject.getObjects().filter(obj => obj.type === 'circle' && obj.idx !== null);
 
-            connections.current.forEach((connection) => {
-                pins.forEach((pin) => {
-                    if (connection.pin1 === pin || connection.pin2 === pin)
-                        updateLinePosition(canvas, connection.pin1, connection.grp1, connection.pin2, connection.grp2, connection.line);
+            if (lang.type !== 'block') {
+                connections.current.forEach((connection) => {
+                    pins.forEach((pin) => {
+                        if (connection.pin1 === pin || connection.pin2 === pin)
+                            updateLinePosition(canvas, connection.pin1, connection.grp1, connection.pin2, connection.grp2, connection.line);
+                    });
                 });
-            });
 
-            // movingObject.getObjects().forEach((obj) => {
-            //     if (obj.type === 'group') {
-            //         const pins = obj.getObjects().filter(obj => obj.type === 'circle' && obj.idx !== null);
+            } else {
+                // console.log(movingObject.ID);
+                Object.keys(forest.current[movingObject.ID]).forEach((child) => {
+                    components.current[child].visual.set({
+                        left: movingObject.left + forest.current[movingObject.ID][child][0],
+                        top: movingObject.top + forest.current[movingObject.ID][child][1]
+                    });
 
-            //         connections.current.forEach((connection) => {
-            //             pins.forEach((pin) => {
-            //                 if (connection.pin1 === pin || connection.pin2 === pin)
-            //                     updateLinePosition(canvas, connection.pin1, connection.grp1, connection.pin2, connection.grp2, connection.line);
-            //             });
-            //         });
-            //     }
-            // })
+                    components.current[child].visual.setCoords();
+                });
+
+                this.renderAll();
+            }
         });
 
         vpt.current = canvas.viewportTransform;
@@ -449,9 +467,339 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
             stopPolling();
             canvas.dispose();
         };
-    }, []);
+    }, [lang]);
 
+    const destroyTree = (blockID, parentID, exceptions) => {
+        if ('@1' in components.current[parentID].pins && components.current[parentID].pins["@1"]) {
+            destroyTree(blockID, components.current[parentID].pins["@1"][0], exceptions);
+        }
+        if (!exceptions.includes(parentID))
+            delete forest.current[parentID][blockID];
+    }
 
+    const destroyLineOfTrees = (blockID, parentID, exceptions) => {
+        exceptions.push(blockID);
+        Object.keys(components.current[blockID].pins).forEach((pin) => {
+            if (pin[0] === '$' && components.current[blockID].pins[pin]) {
+                destroyLineOfTrees(components.current[blockID].pins[pin][0], blockID, exceptions);
+            }
+        });
+        destroyTree(blockID, parentID, exceptions);
+    }
+
+    const iterTillTreeStart = (block, parent) => {
+        while (parent) {
+            let newRelativeCoords = [block.left - parent.left, block.top - parent.top];
+            forest.current[parent.ID][block.ID] = [newRelativeCoords[0], newRelativeCoords[1]];
+            parent = components.current[parent.ID].pins["@1"] ? components.current[components.current[parent.ID].pins["@1"][0]].visual : null;
+        }
+    }
+
+    const addLineToTree = (block) => {
+        const pins = block.getObjects().filter(obj => (obj.idx && obj.idx[0] === '$'));
+        pins.forEach((pin) => {
+            if (components.current[block.ID].pins[pin.idx]) {
+                iterTillTreeStart(components.current[components.current[block.ID].pins[pin.idx][0]].visual, block);
+                addLineToTree(components.current[components.current[block.ID].pins[pin.idx][0]].visual);
+            }
+        });
+    }
+
+    const snapWithChildren = (block, changeCoords) => {
+        let newCoords = [block.left + changeCoords[0], block.top + changeCoords[1]];
+        block.set({
+            left: newCoords[0],
+            top: newCoords[1]
+        });
+        block.setCoords();
+
+        const pins = block.getObjects().filter(obj => (obj.idx && obj.idx[0] === '$'));
+        pins.forEach((pin) => {
+            if (components.current[block.ID].pins[pin.idx]) {
+                snapWithChildren(components.current[components.current[block.ID].pins[pin.idx][0]].visual, changeCoords);
+            }
+        });
+    }
+
+    const computeTreeHeight = (block) => {
+        let height = 0;
+        let stepHeight = 0;
+
+        height += libComps[block.id]['dimensions'][1];
+        console.log("block", block.ID, "dim:", height);
+        block.getObjects().filter(obj => (obj.idx && obj.idx[0] === '$')).forEach((pin) => {
+            if (pin.side[0] === 0) {
+                if (components.current[block.ID].pins[pin.idx])
+                    stepHeight = computeTreeHeight(components.current[components.current[block.ID].pins[pin.idx][0]].visual);
+                    height += stepHeight;
+                    console.log("below",stepHeight);
+            } else {
+                height += pin.side[1] - pin.side[0];
+                console.log("step", pin.side[1] - pin.side[0])
+            }
+        });
+
+        return height;
+    }
+
+    const contractionHandler = (canvas, droppedBlock, nearBlock, nearPin) => {
+        if (nearBlock._objects[0].type === 'polygon' && nearPin.side[0] !== 0) {
+            let Yext = computeTreeHeight(droppedBlock);
+            let newSize = nearPin.side[1] - Yext;
+            
+            if (newSize > nearPin.side[0]) {
+                Yext = newSize - nearPin.side[0];
+            } else {
+                Yext = newSize;
+            }
+
+            // console.log(nearPin.side[1], Yext, newSize);
+
+            // console.log("cont handler: dropobj", droppedBlock.ID, "upperblc", nearBlock.ID, "side:", nearPin.side, "Yext", Yext);
+
+            let newObj = JSON.parse(JSON.stringify(libComps[nearBlock.id]));
+            const relativePinY = newObj['outpins'][nearPin.idx.slice(1) - 1][1];
+
+            newObj["style"]["points"].forEach((point) => {
+                if (point.y > relativePinY + 10) {
+                    point.y += Yext;
+                }
+            });
+
+            newObj["text"].forEach((text) => {
+                if (text["area"][0][1] > relativePinY + 10) {
+                    text["area"][0][1] += Yext;
+                    text["area"][1][1] += Yext;
+                }
+            });
+
+            newObj["outpins"].forEach((pin) => {
+                if (pin[1] > relativePinY + 10) {
+                    pin[1] += Yext;
+                }
+            });
+
+            const newGroup = generateGroupedComponent(newObj, lang);
+            newGroup.set({
+                ID: nearBlock.ID,
+                left: nearBlock.left,
+                top: nearBlock.top
+            })
+
+            newGroup.getObjects().filter(obj => (obj.idx && obj.idx === nearPin.idx))[0].side[1] = Yext + nearPin.side[0];
+            console.log("newside1:", newGroup.getObjects().filter(obj => (obj.idx && obj.idx === nearPin.idx))[0].side[1])
+            components.current[nearBlock.ID].visual = newGroup;
+
+            canvas.remove(nearBlock);
+            canvas.add(newGroup);
+            newGroup.setCoords();
+
+            let lastPin = null, maxID = 0;
+            newGroup.getObjects().filter(obj => (obj.idx && obj.idx[0] === '$')).forEach((pin) => {
+                if (parseInt(pin.idx.slice(1)) > maxID) {
+                    lastPin = components.current[newGroup.ID].pins[pin.idx];
+                }
+            });
+
+            if (lastPin) {
+                snapWithChildren(components.current[lastPin[0]].visual, [0, Yext + nearPin.side[0] - nearPin.side[1]]);
+                canvas.renderAll();
+
+                iterTillTreeStart(components.current[lastPin[0]].visual, newGroup);
+                addLineToTree(components.current[lastPin[0]].visual);
+            }
+
+            return newGroup;
+        }
+
+        return nearBlock;
+    }
+
+    const blockDropped = () => {
+        if (lang.type === 'block') {
+            const droppedBlock = canvasRef.current.getActiveObject();
+
+            const inpPin = droppedBlock.getObjects().filter(obj => (obj.idx && obj.idx[0] === '@' && obj.idx[1] === '1'))[0];
+            if (inpPin) {
+                const inpPinCoords = { x: inpPin.left + droppedBlock.left + droppedBlock.width / 2, y: inpPin.top + droppedBlock.top + droppedBlock.height / 2 };
+
+                const canvas = canvasRef.current;
+                const otherBlocks = canvas._objects.slice(321);
+
+                if (components.current[droppedBlock.ID].pins["@1"]) {
+
+                    let parentBlock = components.current[components.current[droppedBlock.ID].pins["@1"][0]].visual;
+                    let parentPin = parentBlock.getObjects().filter(obj => (obj.idx && obj.idx === components.current[droppedBlock.ID].pins["@1"][1]))[0];
+
+                    if (!isNearPin(inpPinCoords, parentPin, parentBlock, 20)) {
+
+                        let exceptions = [];
+                        destroyLineOfTrees(droppedBlock.ID, parentBlock.ID, exceptions);
+
+                        components.current[droppedBlock.ID].pins[inpPin.idx] = null;
+                        components.current[parentBlock.ID].pins[parentPin.idx] = null;
+
+                        let curBlock = contractionHandler(canvas, droppedBlock, parentBlock, parentPin);
+                        if (components.current[curBlock.ID].pins["@1"]) {
+                            let upBlock = components.current[components.current[curBlock.ID].pins["@1"][0]].visual;
+                            let upPin = upBlock.getObjects().filter(obj => (obj.idx && obj.idx === components.current[curBlock.ID].pins["@1"][1]))[0];
+                            // console.log("abc:", upBlock, upPin)
+
+                            while (upBlock) {
+                                console.log("conexp", curBlock.ID, upBlock.ID);
+                                curBlock = expansionHandler(canvas, curBlock, upBlock, upPin);
+                                if (components.current[curBlock.ID].pins["@1"]) {
+                                    upBlock = components.current[components.current[curBlock.ID].pins["@1"][0]].visual;
+                                    upPin = upBlock.getObjects().filter(obj => (obj.idx && obj.idx === components.current[curBlock.ID].pins["@1"][1]))[0];
+                                } else {
+                                    upBlock = null;
+                                    upPin = null;
+                                }
+                                
+                            }
+                        }
+                        
+                    }
+
+                }
+
+                let nearPin = null;
+                let nearPinCoords = null;
+                let nearBlock = null;
+
+                for (let otherblock of otherBlocks) {
+                    if (otherblock.ID !== droppedBlock.ID) {
+                        if (otherblock.type === 'group') {
+                            let otherOutPins = otherblock.getObjects().filter(obj => (obj.idx && (obj.idx[0] === '$')));
+
+                            for (let pin of otherOutPins) {
+                                if (isNearPin(inpPinCoords, pin, otherblock, 25) && !components.current[otherblock.ID].pins[pin.idx]) {
+                                    nearPin = pin;
+                                    nearBlock = otherblock;
+                                    nearPinCoords = [pin.left + otherblock.left + otherblock.width / 2, pin.top + otherblock.top + otherblock.height / 2];
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (nearPin)
+                        break;
+                }
+
+                if (nearPin) {
+                    components.current[droppedBlock.ID].pins[inpPin.idx] = [nearBlock.ID, nearPin.idx];
+                    components.current[nearBlock.ID].pins[nearPin.idx] = [droppedBlock.ID, inpPin.idx];
+
+                    let changeCoords = [nearPinCoords[0] - inpPinCoords.x, nearPinCoords[1] - inpPinCoords.y];
+                    snapWithChildren(droppedBlock, changeCoords);
+
+                    {
+                        let upperBlock = nearBlock;
+                        let currentBlock = droppedBlock;
+                        let upperPin = nearPin;
+
+                        while (upperBlock) {
+                            // console.log("calling exp for:", currentBlock.ID, upperBlock.ID)
+                            
+                            currentBlock = expansionHandler(canvas, currentBlock, upperBlock, upperPin);;
+                            if (components.current[currentBlock.ID].pins["@1"]) {
+                                upperBlock = components.current[components.current[currentBlock.ID].pins["@1"][0]].visual;
+                                upperPin = upperBlock.getObjects().filter(obj => (obj.idx && obj.idx === components.current[currentBlock.ID].pins["@1"][1]))[0];
+                            } else {
+                                upperBlock = null;
+                                upperPin = null;
+                            }
+                            
+                        }
+
+                        // console.log(components.current);
+                    }
+
+                    canvas.renderAll()
+
+                    let parent = nearBlock;
+                    while (parent) {
+                        let newRelativeCoords = [droppedBlock.left - parent.left, droppedBlock.top - parent.top];
+                        forest.current[parent.ID][droppedBlock.ID] = [newRelativeCoords[0], newRelativeCoords[1]];
+                        parent = components.current[parent.ID].pins["@1"] ? components.current[components.current[parent.ID].pins["@1"][0]].visual : null;
+                    }
+
+                    addLineToTree(droppedBlock);
+                }
+
+                // console.log(components.current);
+                // console.log(forest.current);
+            }
+        }
+    }
+
+    const expansionHandler = (canvas, droppedBlock, nearBlock, nearPin) => {
+        // console.log("exp handler:", droppedBlock, nearBlock._objects[0].type, nearPin)
+        
+        if (nearBlock._objects[0].type === 'polygon' && nearPin.side[0] !== 0) {
+            let Yext = computeTreeHeight(droppedBlock);
+            Yext = Yext - nearPin.side[0];
+
+            // console.log("dropobj", droppedBlock.ID, "upperblc", nearBlock.ID, "side:", nearPin.side, "Yext", Yext);
+
+            let newObj = JSON.parse(JSON.stringify(libComps[nearBlock.id]));
+            const relativePinY = newObj['outpins'][nearPin.idx.slice(1) - 1][1];
+
+            newObj["style"]["points"].forEach((point) => {
+                if (point.y > relativePinY + 10) {
+                    point.y += Yext;
+                }
+            });
+
+            newObj["text"].forEach((text) => {
+                if (text["area"][0][1] > relativePinY + 10) {
+                    text["area"][0][1] += Yext;
+                    text["area"][1][1] += Yext;
+                }
+            });
+
+            newObj["outpins"].forEach((pin) => {
+                if (pin[1] > relativePinY + 10) {
+                    pin[1] += Yext;
+                }
+            });
+
+            const newGroup = generateGroupedComponent(newObj, lang);
+            newGroup.set({
+                ID: nearBlock.ID,
+                left: nearBlock.left,
+                top: nearBlock.top
+            })
+
+            newGroup.getObjects().filter(obj => (obj.idx && obj.idx === nearPin.idx))[0].side[1] = Yext + nearPin.side[0];
+            // console.log("newside1:", newGroup.getObjects().filter(obj => (obj.idx && obj.idx === nearPin.idx))[0].side[1])
+            components.current[nearBlock.ID].visual = newGroup;
+
+            canvas.remove(nearBlock);
+            canvas.add(newGroup);
+            newGroup.setCoords();
+
+            let lastPin = null, maxID = 0;
+            newGroup.getObjects().filter(obj => (obj.idx && obj.idx[0] === '$')).forEach((pin) => {
+                if (parseInt(pin.idx.slice(1)) > maxID) {
+                    lastPin = components.current[newGroup.ID].pins[pin.idx];
+                }
+            });
+
+            if (lastPin) {
+                snapWithChildren(components.current[lastPin[0]].visual, [0, Yext + nearPin.side[0] - nearPin.side[1]]);
+                canvas.renderAll();
+
+                iterTillTreeStart(components.current[lastPin[0]].visual, newGroup);
+                addLineToTree(components.current[lastPin[0]].visual);
+            }
+
+            return newGroup;
+        }
+
+        return nearBlock;
+    }
 
     useEffect(() => {
         const canvasInstance = canvasRef.current;
@@ -462,14 +810,17 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
                 e.preventDefault();
                 e.stopPropagation();
                 const pointer = canvasInstance.getPointer(e);
-                const id = draggedComponent;
+                const id = draggedComponent[0];
                 const compdef = libComps[id];
 
-                fabric.util.enlivenObjects([compdef], (objects) => {
-                    const group = generateGroupedComponent(compdef);
+                const adjustedLeft = pointer.x - draggedComponent[1];
+                const adjustedTop = pointer.y - draggedComponent[2];
 
-                    group.left = pointer.x;
-                    group.top = pointer.y;
+                fabric.util.enlivenObjects([compdef], (objects) => {
+                    const group = generateGroupedComponent(compdef, lang);
+
+                    group.left = adjustedLeft;
+                    group.top = adjustedTop;
 
                     ObjectCounter.current += 1;
                     group.set('ID', ObjectCounter.current);
@@ -497,11 +848,16 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
                         comp.pins[`$${index + 1}`] = null;
                     });
 
-                    // console.log(comp);
                     components.current.push(comp)
+                    forest.current[comp.ID] = {};
 
                     canvasInstance.add(comp.visual);
+                    // console.log(canvasInstance._objects.slice(321))
+                    canvasInstance.setActiveObject(comp.visual);
                 });
+
+                if (lang.type === 'block')
+                    blockDropped();
 
             };
 

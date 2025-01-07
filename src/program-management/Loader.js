@@ -3,7 +3,7 @@ export function Loader() {
         const Json = JSON.parse(json);
         const comps = Json["components"];
 
-        loadComponents(null);
+        loadComponents({});
     
         comps.forEach(component => {
             const id = component.id;

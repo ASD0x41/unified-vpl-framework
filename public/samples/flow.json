@@ -14,13 +14,15 @@
                 "height": 50,
                 "fill": "blue"
             },
-            "text": {
-                "content": "Start",
-                "fontSize": 14,
-                "fill": "white",
-                "textAlign": "center",
-                "area": [[0,0],[100,50]]
-            },
+            "text": [
+                {
+                    "content": "Start",
+                    "fontSize": 14,
+                    "fill": "white",
+                    "textAlign": "center",
+                    "area": [[0,0],[100,50]]
+                }
+            ],
             "dimensions": [100,50],
             "inpins": [],
             "outpins": [[50,50,"bottom"]],
@@ -38,13 +40,15 @@
                 "height": 50,
                 "fill": "blue"
             },
-            "text": {
-                "content": "User Input",
-                "fontSize": 14,
-                "fill": "white",
-                "textAlign": "center",
-                "area": [[0,0],[100,50]]
-            },
+            "text": [
+                {
+                    "content": "User Input",
+                    "fontSize": 14,
+                    "fill": "white",
+                    "textAlign": "center",
+                    "area": [[0,0],[100,50]]
+                }
+            ],
             "dimensions": [100,50],
             "inpins": [[50,0,"top"]],
             "outpins": [[50,50,"bottom"]],
@@ -62,13 +66,15 @@
                 "height": 50,
                 "fill": "green"
             },
-            "text": {
-                "content": "Output",
-                "fontSize": 14,
-                "fill": "white",
-                "textAlign": "center",
-                "area": [[0,0],[100,50]]
-            },
+            "text": [
+                {
+                    "content": "Output",
+                    "fontSize": 14,
+                    "fill": "white",
+                    "textAlign": "center",
+                    "area": [[0,0],[100,50]]
+                }
+            ],
             "dimensions": [100,50],
             "inpins": [[50,0,"top"]],
             "outpins": [[50,50,"bottom"]],
@@ -92,13 +98,15 @@
                 "height": 100,
                 "fill": "red"
             },
-            "text": {
-                "content": "If-Else",
-                "fontSize": 14,
-                "fill": "black",
-                "textAlign": "center",
-                "area": [[0,0],[100,100]]
-            },
+            "text": [
+                {
+                    "content": "If-Else",
+                    "fontSize": 14,
+                    "fill": "black",
+                    "textAlign": "center",
+                    "area": [[0,0],[100,100]]
+                }
+            ],
             "dimensions": [100,100],
             "inpins": [[50,0,"top"]],
             "outpins": [[0,50,"left"],[100,50,"right"]],

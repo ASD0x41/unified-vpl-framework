@@ -17,6 +17,7 @@ export const Manager = ({ children }) => {
     const dstGroup = useRef(null);
     const dstPin = useRef(null);
     const isDisconnecting = useRef(false);
+    const forest = useRef({});
 
     return (
         <ConnectionContext.Provider value={{
@@ -28,7 +29,8 @@ export const Manager = ({ children }) => {
             srcPin,
             dstGroup,
             dstPin,
-            isDisconnecting
+            isDisconnecting,
+            forest
         }}>
             {children}
         </ConnectionContext.Provider>

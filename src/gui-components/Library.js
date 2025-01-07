@@ -3,9 +3,9 @@ import { fabric } from 'fabric';
 import { useState } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { faChevronLeft, faChevronRight, faLandmarkFlag, faLanguage } from '@fortawesome/free-solid-svg-icons';
 
-export default function Library({ libLevel, libcomponents, onDragStart }) {
+export default function Library({ libLevel, libcomponents, onDragStart, lang }) {
     const [collapse, setCollapse] = useState(false);
 
 
@@ -37,14 +37,14 @@ export default function Library({ libLevel, libcomponents, onDragStart }) {
                         });
 
 
-                        let group = generateGroupedComponent(obj);
+                        let group = generateGroupedComponent(obj, lang);
 
                         tempCanvas.add(group);
                         tempCanvas.renderAll();
 
                         return (
                             <div key={index} className="visual">
-                                <button className="image-button" draggable="true" onDragStart={() => onDragStart(id)}
+                                <button className="image-button" draggable="true" onDragStart={(e) => onDragStart(id, e)}
                                     style={{
                                         backgroundSize: 'contain',
                                         backgroundRepeat: 'no-repeat',
@@ -71,9 +71,9 @@ export default function Library({ libLevel, libcomponents, onDragStart }) {
 
 }
 
-export function generateGroupedComponent(obj) {
+export function generateGroupedComponent(obj, lang) {
     const style = obj.style;
-    const text = obj.text;
+    const textA = obj.text;
     const id = obj.id;
 
     let shapeObj;
@@ -105,18 +105,20 @@ export function generateGroupedComponent(obj) {
 
     const groupItems = [shapeObj];
 
-    if (text) {
-        const textObj = new fabric.Text(text.content, {
-            fontSize: text.fontSize || 16,
-            fill: text.fill || 'black',
-            originX: 'center',
-            originY: 'center',
-            left: 0.5 * text.area[0][0] + 0.5 * text.area[1][0] || obj.dimensions[0] + 10 / 2,
-            top: 0.5 * text.area[0][1] + 0.5 * text.area[1][1] || obj.dimensions[1] + 10 / 2,
-            textAlign: text.textAlign || 'center'
+    if (textA) {
+        textA.forEach((text) => {
+            const textObj = new fabric.Text(text.content, {
+                fontSize: text.fontSize || 16,
+                fill: text.fill || 'black',
+                originX: 'center',
+                originY: 'center',
+                left: 0.5 * text.area[0][0] + 0.5 * text.area[1][0] || obj.dimensions[0] + 10 / 2,
+                top: 0.5 * text.area[0][1] + 0.5 * text.area[1][1] || obj.dimensions[1] + 10 / 2,
+                textAlign: text.textAlign || 'center'
+            });
+    
+            groupItems.push(textObj);
         });
-
-        groupItems.push(textObj);
     }
 
     const createPins = (pins, color, type) => {
@@ -137,9 +139,34 @@ export function generateGroupedComponent(obj) {
         });
     };
 
-    const inPins = createPins(obj.inpins, 'white', 'in');
-    const outPins = createPins(obj.outpins, 'white', 'out');
-    groupItems.push(...inPins, ...outPins);
+    const createBlockPins = (pins, color, type) => {
+        return pins.map(([x, y, side, explvl], index) => {
+            return new fabric.Circle({
+                radius: 3,
+                fill: color,
+                opacity: 0,
+                visible: false,
+                left: x,
+                top: y,
+                selectable: false,
+                originX: 'center',
+                originY: 'center',
+                stroke: 'none',
+                idx: type === "in" ? `@${index + 1}` : `$${index + 1}`,
+                side: [explvl, explvl]
+            });
+        });
+    };
+
+    if (lang.type === 'block') {
+        const inPins = createBlockPins(obj.inpins, 'white', 'in');
+        const outPins = createBlockPins(obj.outpins, 'white', 'out');
+        groupItems.push(...inPins, ...outPins);
+    } else {
+        const inPins = createPins(obj.inpins, 'white', 'in');
+        const outPins = createPins(obj.outpins, 'white', 'out');
+        groupItems.push(...inPins, ...outPins);
+    }
 
     const group = new fabric.Group(groupItems, {
         left: 0,
