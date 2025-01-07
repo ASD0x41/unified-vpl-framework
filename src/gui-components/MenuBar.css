@@ -2,9 +2,12 @@
     grid-column: 1 / 2;
     grid-row: 2 / 5;
 
-    background-color: #444;
+    background-color: #222;
 
     padding: 5px;
+
+    /* border: 1px solid #444; */
+    /* border-right: 1px solid #111; */
 }
 
 .button-container {
@@ -13,7 +16,7 @@
 }
 
 .icon-button {
-    background-color: #555;
+    background-color: #333;
     color: white;
 
     width: 30px;

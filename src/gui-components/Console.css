@@ -8,6 +8,9 @@
     max-width: calc(75vw - 40px);
 
     z-index: 1;
+
+    /* border: 1px solid #444; */
+    /* border-top: 1px solid #111; */
 }
 
 .console .icon-button {
@@ -15,7 +18,7 @@
 }
 
 .console-output {
-    background-color: #444;
+    background-color: #222;
     color: #fff;
 
     margin: 10px 10px 0px 10px;
@@ -39,13 +42,13 @@
 }
 
 .console-output::-webkit-scrollbar-track {
-    background: #333;
+    background: #222;
 }
 
 .console-output::-webkit-scrollbar-thumb {
-    background-color: #888;
+    background-color: #333;
     border-radius: 10px;
-    border: 2px solid #333;
+    border: 2px solid #222;
 }
 
 .console-output::-webkit-scrollbar-thumb:hover {
@@ -71,6 +74,11 @@
     border-radius: 2px;
 
     font-family: monospace;
+}
+
+#console-input:focus {
+    outline: none;
+    /* border-color: #007bff; */
 }
 
 .console-log {

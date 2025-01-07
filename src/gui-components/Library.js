@@ -33,7 +33,7 @@ export default function Library({ libLevel, libcomponents, onDragStart, lang }) 
                         const tempCanvas = new fabric.Canvas(null, {
                             width: canvasWidth,
                             height: canvasHeight,
-                            backgroundColor: '#d1d1d1'
+                            backgroundColor: '#555'
                         });
 
 

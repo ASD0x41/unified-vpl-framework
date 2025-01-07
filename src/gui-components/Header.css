@@ -1,6 +1,8 @@
 .module-title-bar {
     padding: 5px;
     height: 30px;
+
+    
 }
 
 .title-bar {
@@ -10,12 +12,14 @@
     display: grid;
     grid-template-columns: 1fr 4fr 1fr;
 
-    background-color: #333;
+    background-color: #222;
     color: white;
 
     height: 40px;
     
     -webkit-app-region: drag;
+
+    /* border-bottom: 1px solid #111; */
 }
 
 .app-icon {
