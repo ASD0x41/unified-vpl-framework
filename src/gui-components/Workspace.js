@@ -23,7 +23,7 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
         forest
     } = useConnectionContext();
 
-    const PIN_RADIUS = 25;
+    const PIN_RADIUS = 30;
 
     const isNearPin = (pointer, pin, targetGroup, pinrad) => {
         const distance = Math.sqrt(
@@ -70,10 +70,13 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
 
 
     const handleGroupClick = (e) => {
-        if (e.selected.length > 1) {
-            canvasRef.current.discardActiveObject();
-            canvasRef.current.renderAll();
-        }
+        // if (e.selected.length > 1) {
+        //     // canvasRef.current.discardActiveObject();
+
+        //     canvasRef.current.renderAll();
+        // }
+
+        //console.log("Hello")
 
         if (e.selected && e.selected !== undefined && isConnecting.current) {
             const canvasInstance = canvasRef.current;
@@ -97,7 +100,7 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
 
             if (clickedPin) {
                 if (isConnecting.current && srcGroup.current && srcPin.current) {
-                    if (!components.current[targetGroup.ID].pins[clickedPin.idx] || (lang.type === 'dataflow' && clickedPin.idx[0] === '$')) {
+                    if (!components.current[targetGroup.ID].pins[clickedPin.idx] || (lang.type === 'dataflow' && clickedPin.idx[0] === '$') || (lang.type === 'flowchart' && clickedPin.idx[0] === '@')) {
                         if (srcGroup.current.ID !== targetGroup.ID) {
                             if ((srcPin.current.idx[0] === '@' && clickedPin.idx[0] === '$') || (srcPin.current.idx[0] === '$' && clickedPin.idx[0] === '@')) {
                                 dstGroup.current = targetGroup;
@@ -141,7 +144,7 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
                         srcPin.current.set('fill', 'orange');
                         //console.log("Pin selected! Click on another group to connect pins.");
                     }
-                    else if (lang.type === 'dataflow' && clickedPin.idx[0] === '$') {
+                    else if (lang.type === 'dataflow' && clickedPin.idx[0] === '$' || lang.type === 'flowchart' && clickedPin.idx[0] === '@') {
                         srcGroup.current = targetGroup;
                         srcPin.current = clickedPin;
                         srcPin.current.set('fill', 'orange');
@@ -282,6 +285,7 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
     };
 
     const updateLinePosition = (canvasInstance, pin1, grp1, pin2, grp2, line) => {
+        // console.log("Hello!");
         const points = computePoints(pin1, grp1, pin2, grp2);
 
         line.set({
@@ -467,7 +471,7 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
             stopPolling();
             canvas.dispose();
         };
-    }, [lang]);
+    }, []);
 
     const destroyTree = (blockID, parentID, exceptions) => {
         if ('@1' in components.current[parentID].pins && components.current[parentID].pins["@1"]) {
@@ -626,12 +630,12 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
                 const canvas = canvasRef.current;
                 const otherBlocks = canvas._objects.slice(321);
 
-                if (components.current[droppedBlock.ID].pins["@1"]) {
+                if (components.current[droppedBlock.ID].pins["@1"] && components.current[components.current[droppedBlock.ID].pins["@1"][0][0]].pins[components.current[droppedBlock.ID].pins["@1"][0][1]] && components.current[components.current[droppedBlock.ID].pins["@1"][0][0]].pins[components.current[droppedBlock.ID].pins["@1"][0][1]][0][0] === droppedBlock.ID && components.current[components.current[droppedBlock.ID].pins["@1"][0][0]].pins[components.current[droppedBlock.ID].pins["@1"][0][1]][0][1] === "@1") {
 
                     let parentBlock = components.current[components.current[droppedBlock.ID].pins["@1"][0][0]].visual;
                     let parentPin = parentBlock.getObjects().filter(obj => (obj.idx && obj.idx === components.current[droppedBlock.ID].pins["@1"][0][1]))[0];
 
-                    if (!isNearPin(inpPinCoords, parentPin, parentBlock, 20)) {
+                    if (!isNearPin(inpPinCoords, parentPin, parentBlock, 50)) {
 
                         let exceptions = [];
                         destroyLineOfTrees(droppedBlock.ID, parentBlock.ID, exceptions);
@@ -659,8 +663,18 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
                             }
                         }
                         
+                    } else {
+                        Object.keys(forest.current[parentBlock.ID]).forEach((child) => {
+                            components.current[child].visual.set({
+                                left: parentBlock.left + forest.current[parentBlock.ID][child][0],
+                                top: parentBlock.top + forest.current[parentBlock.ID][child][1]
+                            });
+        
+                            components.current[child].visual.setCoords();
+                        });
+        
+                        canvas.renderAll();
                     }
-
                 }
 
                 let nearPin = null;
@@ -693,6 +707,9 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
 
                     let changeCoords = [nearPinCoords[0] - inpPinCoords.x, nearPinCoords[1] - inpPinCoords.y];
                     snapWithChildren(droppedBlock, changeCoords);
+
+                    canvas.renderAll();
+                    //console.log("Hello!")
 
                     {
                         let upperBlock = nearBlock;
@@ -853,11 +870,18 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
 
                     canvasInstance.add(comp.visual);
                     // console.log(canvasInstance._objects.slice(321))
-                    canvasInstance.setActiveObject(comp.visual);
+                    //canvasInstance.setActiveObject(comp.visual);
                 });
 
                 if (lang.type === 'block')
                     blockDropped();
+
+                // console.log(components.current);
+                // console.log(forest.current);
+                // console.log(ObjectCounter.current);
+                // console.log(connections.current);
+                
+                
 
             };
 

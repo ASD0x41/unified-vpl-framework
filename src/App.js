@@ -21,7 +21,7 @@ function App() {
   const [libraryComponents, setLibraryComponents] = useState({});
 
   useEffect(() => {
-    fetch('/samples/data.json')
+    fetch('/samples/flow.json')
       .then((response) => response.json())
       .then((jsonData) => {
         const comps = jsonData["components"];
@@ -128,7 +128,7 @@ function App() {
     <Manager>
       <div className="App">
         <Header />
-        <MenuBar clearConsole={clearConsole} canvas={canvasRef} loadComponents={loadVisualLang} setSelectedComponent={setSelectedComponent} lang={lang} libComps={libraryComponents} />
+        <MenuBar clearConsole={clearConsole} canvas={canvasRef} loadComponents={loadVisualLang} setSelectedComponent={setSelectedComponent} lang={lang} libComps={libraryComponents} setLang={setLang}/>
         <Workspace onCanvasReady={handleCanvasReady} draggedComponent={draggedComponent} libComps={libraryComponents} setSelectedComponent={setSelectedComponent} lang={lang} />
         <Library libLevel={libExtension} libcomponents={libraryComponents} onDragStart={dragStarter} lang={lang} />
         <Console logMessages={logMessages} setLogMessages={setLogMessages} />

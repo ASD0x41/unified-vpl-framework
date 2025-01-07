@@ -1,4 +1,5 @@
 import './MenuBar.css';
+import { fabric } from 'fabric';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -10,10 +11,10 @@ import { changeZoom } from './Workspace';
 import { deleteLineBetweenPins, addGridToCanvas } from './Workspace';
 import { useConnectionContext } from '../program-management/Manager.js';
 import { Compiler } from '../program-management/Compiler.js'
+import { computePoints } from '../program-management/Helper.js';
 
-export default function MenuBar({ clearConsole, canvas, loadComponents, setSelectedComponent, lang, libComps }) {
+export default function MenuBar({ clearConsole, canvas, loadComponents, setSelectedComponent, lang, libComps, setLang }) {
     const {
-        ObjectCounter,
         connections,
         components,
         isConnecting,
@@ -22,7 +23,9 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
         dstGroup,
         dstPin,
         isDisconnecting,
-        forest
+        forest,
+        ObjectCounter,
+        tempVal
     } = useConnectionContext();
     const { compileProgram } = Compiler(components);
 
@@ -137,16 +140,16 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
 
                 pins.forEach((pin) => {
                     connections.current.forEach((connection, index) => {
-    
+
                         if (connection.pin1 === pin || connection.pin2 === pin) {
                             let otherPin = null;
                             if (connection.pin1 === pin)
                                 otherPin = connection.pin2;
                             else if (connection.pin2 === pin)
                                 otherPin = connection.pin1;
-    
+
                             deleteLineBetweenPins(canvas.current, connections, pin, otherPin);
-    
+
                             let remCounts = 0;
                             for (let i = 0; i < connections.current.length; i++) {
                                 if (connections.current[i].pin1 === otherPin || connections.current[i].pin2 === otherPin)
@@ -167,6 +170,152 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
 
             // console.log(forest.current);
         }
+    }
+
+    const newProgram = () => {
+        components.current = [{}];
+        connections.current = [];
+        forest.current = {};
+        isConnecting.current = false;
+        isDisconnecting.current = false;
+        srcPin.current = null;
+        srcGroup.current = null;
+        dstPin.current = null;
+        dstGroup.current = null;
+        ObjectCounter.current = 0;
+
+        tempVal.current = JSON.parse(JSON.stringify(lang));
+        setLang(tempVal.current);
+
+        // canvas.current.clear();
+        // addGridToCanvas(canvas.current, 20);
+    }
+
+    const loadProgram = (event) => {
+        const file = event.target.files[0];
+        if (!file) {
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            try {
+                const json = e.target.result;
+                document.getElementById('canvas-file').value = '';
+
+                const Json = JSON.parse(json);
+
+                loadComponents(JSON.stringify(Json["language"]));
+
+                components.current = Json["components"];
+                const tempConns = Json["connections"];
+                forest.current = Json["blockstacks"];
+                ObjectCounter.current = Json["counter"]
+
+                canvas.current.loadFromJSON(Json["canvas"], () => {
+                    canvas.current._objects.slice(321).forEach((obj) => {
+                        if (components.current[obj.ID])
+                            components.current[obj.ID].visual = obj;
+                    });
+
+                    canvas.current.renderAll();
+
+                    canvas.current.getObjects().forEach((obj) => {
+                        if (obj.type === 'polyline') {
+                            canvas.current.remove(obj);
+                        }
+                    });
+
+                    canvas.current.renderAll();
+
+                    tempConns.forEach((conn) => {
+                        let grp1 = components.current[conn.grp1].visual;
+                        let grp2 = components.current[conn.grp2].visual;
+
+                        let pin1 = grp1.getObjects().filter(obj => (obj.idx && obj.idx === conn.pin1))[0];
+                        let pin2 = grp2.getObjects().filter(obj => (obj.idx && obj.idx === conn.pin2))[0];
+
+                        // console.log(grp1, pin1, grp2, pin2);
+
+                        const points = computePoints(pin1, grp1, pin2, grp2);
+
+                        const line = new fabric.Polyline([{ x: -canvas.current.width, y: -canvas.current.height }, { x: 2 * canvas.current.width, y: 2 * canvas.current.height }], {
+                            fill: 'transparent',
+                            stroke: 'red',
+                            strokeWidth: 2,
+                            selectable: false,
+                            evented: false
+                        });
+
+                        canvas.current.add(line);
+
+                        line.set({
+                            points: points
+                        });
+
+                        line.setCoords();
+                        line.sendBackwards();
+                        canvas.current.renderAll();
+
+                        connections.current.push({
+                            pin1: pin1,
+                            grp1: grp1,
+                            pin2: pin2,
+                            grp2: grp2,
+                            line: line
+                        });
+                    });
+
+                    canvas.current.renderAll();
+                });
+
+                // console.log("hi:", canvas.current);
+
+
+
+            } catch (error) {
+                console.error('Error loading program from JSON:', error);
+            }
+        };
+
+        reader.readAsText(file);
+    }
+
+    const saveProgram = () => {
+        const saveFile = {};
+
+        saveFile["language"] = { name: lang.name, type: lang.type, components: Object.values(JSON.parse(JSON.stringify(libComps, '\t'))) };
+
+        const comprepl = (key, value) => {
+            if (key === 'visual') {
+                return undefined;
+            }
+            return value;
+        };
+        saveFile["components"] = JSON.parse(JSON.stringify(components.current, comprepl, '\t'));
+
+        const simpleConns = [];
+        connections.current.forEach((connection) => {
+            simpleConns.push({ pin1: connection.pin1.idx, grp1: connection.grp1.ID, pin2: connection.pin2.idx, grp2: connection.grp2.ID });
+        });
+        saveFile["connections"] = simpleConns;
+
+        saveFile["blockstacks"] = JSON.parse(JSON.stringify(forest.current, '\t'));
+
+        saveFile["counter"] = ObjectCounter.current;
+
+        // const nonGridObjs = canvas.current._objects.slice(321);
+
+        saveFile["canvas"] = canvas.current.toJSON();
+
+        const blob = new Blob([JSON.stringify(saveFile, '\t')], { type: 'application/json' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'my_visual_program.json';
+        link.click();
+
+        URL.revokeObjectURL(link.href);
     }
 
     const saveComponent = () => {
@@ -233,7 +382,7 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
         link.download = "script.py";
 
         document.body.appendChild(link);
-        //link.click();
+        link.click();
 
         document.body.removeChild(link);
     };
@@ -242,14 +391,14 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
         <aside className="menu-bar">
             <div className="button-container">
 
-                <button className="icon-button" title="New Program" id="new-canvas" >
+                <button className="icon-button" title="New Program" id="new-canvas" onClick={newProgram}>
                     <FontAwesomeIcon icon={faFile} />
                 </button>
-                <input type="file" id="canvas-file" style={{ display: 'none' }} />
-                <button className="icon-button" title="Open Program" id="open-canvas" >
+                <input type="file" id="canvas-file" style={{ display: 'none' }} onChange={loadProgram} />
+                <button className="icon-button" title="Open Program" id="open-canvas" onClick={() => document.getElementById('canvas-file').click()}>
                     <FontAwesomeIcon icon={faFolderOpen} />
                 </button>
-                <button className="icon-button" title="Save Program" id="save-canvas" >
+                <button className="icon-button" title="Save Program" id="save-canvas" onClick={saveProgram}>
                     <FontAwesomeIcon icon={faSave} />
                 </button>
 

@@ -1,4 +1,5 @@
 export function Loader() {
+
     const LoadLanguage = (json, loadComponents) => {
         const Json = JSON.parse(json);
         const comps = Json["components"];

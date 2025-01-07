@@ -10,7 +10,7 @@ export default function Header() {
         if (window.electron) {
             window.electron.minimize();
         } else {
-            console.log('Running in browser, cannot minimize window.');
+            console.error('Running in browser, cannot minimize window.');
         }
     };
 
@@ -18,7 +18,7 @@ export default function Header() {
         if (window.electron) {
             window.electron.maximize();
         } else {
-            console.log('Running in browser, cannot maximize window.');
+            console.error('Running in browser, cannot maximize window.');
         }
     };
 
@@ -26,7 +26,7 @@ export default function Header() {
         if (window.electron) {
             window.electron.close();
         } else {
-            console.log('Running in browser, cannot close window.');
+            console.error('Running in browser, cannot close window.');
         }
     };
 

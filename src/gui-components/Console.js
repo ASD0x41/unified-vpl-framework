@@ -45,7 +45,7 @@ export default function Console({ logMessages, setLogMessages }) {
       } catch (error) {
         console.error('Error:', error);
       }
-      consoleInputRef.current.value = ''; // Clear input after command is processed
+      consoleInputRef.current.value = '';
     }
   };
 
