@@ -70,7 +70,23 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
             const ID = activeObject.ID;
             setSelectedComponent(null);
 
-            console.log(components.current);
+            if (lang.type === 'block' && components.current[ID].pins["@1"]) {
+                let blockID = ID;
+
+                while (blockID) {
+                    let parent = components.current[blockID].pins["@1"];
+                    if (parent) {
+                        if (components.current[parent[0][0]].visual.getObjects().filter(obj => (obj.idx && obj.idx === parent[0][1]))[0].side[0] !== 0) {
+                            console.error("Detach block from the stack of blocks first before deletion!")
+                            return;
+                        }
+
+                        blockID = components.current[blockID].pins["@1"][0][0];
+                    } else {
+                        blockID = null;
+                    }
+                }
+            }
 
             if (lang.type === 'block') {
                 let deps = [];
@@ -90,7 +106,9 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
                     }
                 })
 
-                delete forest[activeObject.ID];
+                delete forest[ID];
+
+
             }
 
             // console.log(components.current[ID]);
@@ -102,7 +120,7 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
                         let otherObj = conn[0];
                         let otherPin = conn[1];
 
-                        console.log("mypin", pin ,"otherobj", otherObj, "otherpin", otherPin)
+                        // console.log("mypin", pin ,"otherobj", otherObj, "otherpin", otherPin)
 
                         if (components.current[otherObj].pins[otherPin].length === 1)
                             components.current[otherObj].pins[otherPin] = null;
@@ -146,6 +164,8 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
 
             canvas.current.remove(activeObject);
             components.current[ID] = null;
+
+            // console.log(forest.current);
         }
     }
 

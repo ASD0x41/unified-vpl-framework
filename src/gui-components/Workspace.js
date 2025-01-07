@@ -471,7 +471,7 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
 
     const destroyTree = (blockID, parentID, exceptions) => {
         if ('@1' in components.current[parentID].pins && components.current[parentID].pins["@1"]) {
-            destroyTree(blockID, components.current[parentID].pins["@1"][0], exceptions);
+            destroyTree(blockID, components.current[parentID].pins["@1"][0][0], exceptions);
         }
         if (!exceptions.includes(parentID))
             delete forest.current[parentID][blockID];
@@ -481,7 +481,7 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
         exceptions.push(blockID);
         Object.keys(components.current[blockID].pins).forEach((pin) => {
             if (pin[0] === '$' && components.current[blockID].pins[pin]) {
-                destroyLineOfTrees(components.current[blockID].pins[pin][0], blockID, exceptions);
+                destroyLineOfTrees(components.current[blockID].pins[pin][0][0], blockID, exceptions);
             }
         });
         destroyTree(blockID, parentID, exceptions);
@@ -491,7 +491,7 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
         while (parent) {
             let newRelativeCoords = [block.left - parent.left, block.top - parent.top];
             forest.current[parent.ID][block.ID] = [newRelativeCoords[0], newRelativeCoords[1]];
-            parent = components.current[parent.ID].pins["@1"] ? components.current[components.current[parent.ID].pins["@1"][0]].visual : null;
+            parent = components.current[parent.ID].pins["@1"] ? components.current[components.current[parent.ID].pins["@1"][0][0]].visual : null;
         }
     }
 
@@ -499,8 +499,8 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
         const pins = block.getObjects().filter(obj => (obj.idx && obj.idx[0] === '$'));
         pins.forEach((pin) => {
             if (components.current[block.ID].pins[pin.idx]) {
-                iterTillTreeStart(components.current[components.current[block.ID].pins[pin.idx][0]].visual, block);
-                addLineToTree(components.current[components.current[block.ID].pins[pin.idx][0]].visual);
+                iterTillTreeStart(components.current[components.current[block.ID].pins[pin.idx][0][0]].visual, block);
+                addLineToTree(components.current[components.current[block.ID].pins[pin.idx][0][0]].visual);
             }
         });
     }
@@ -516,7 +516,7 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
         const pins = block.getObjects().filter(obj => (obj.idx && obj.idx[0] === '$'));
         pins.forEach((pin) => {
             if (components.current[block.ID].pins[pin.idx]) {
-                snapWithChildren(components.current[components.current[block.ID].pins[pin.idx][0]].visual, changeCoords);
+                snapWithChildren(components.current[components.current[block.ID].pins[pin.idx][0][0]].visual, changeCoords);
             }
         });
     }
@@ -526,16 +526,16 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
         let stepHeight = 0;
 
         height += libComps[block.id]['dimensions'][1];
-        console.log("block", block.ID, "dim:", height);
+        // console.log("block", block.ID, "dim:", height);
         block.getObjects().filter(obj => (obj.idx && obj.idx[0] === '$')).forEach((pin) => {
             if (pin.side[0] === 0) {
                 if (components.current[block.ID].pins[pin.idx])
-                    stepHeight = computeTreeHeight(components.current[components.current[block.ID].pins[pin.idx][0]].visual);
+                    stepHeight = computeTreeHeight(components.current[components.current[block.ID].pins[pin.idx][0][0]].visual);
                     height += stepHeight;
-                    console.log("below",stepHeight);
+                    // console.log("below",stepHeight);
             } else {
                 height += pin.side[1] - pin.side[0];
-                console.log("step", pin.side[1] - pin.side[0])
+                // console.log("step", pin.side[1] - pin.side[0])
             }
         });
 
@@ -587,7 +587,7 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
             })
 
             newGroup.getObjects().filter(obj => (obj.idx && obj.idx === nearPin.idx))[0].side[1] = Yext + nearPin.side[0];
-            console.log("newside1:", newGroup.getObjects().filter(obj => (obj.idx && obj.idx === nearPin.idx))[0].side[1])
+            // console.log("newside1:", newGroup.getObjects().filter(obj => (obj.idx && obj.idx === nearPin.idx))[0].side[1])
             components.current[nearBlock.ID].visual = newGroup;
 
             canvas.remove(nearBlock);
@@ -602,11 +602,11 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
             });
 
             if (lastPin) {
-                snapWithChildren(components.current[lastPin[0]].visual, [0, Yext + nearPin.side[0] - nearPin.side[1]]);
+                snapWithChildren(components.current[lastPin[0][0]].visual, [0, Yext + nearPin.side[0] - nearPin.side[1]]);
                 canvas.renderAll();
 
-                iterTillTreeStart(components.current[lastPin[0]].visual, newGroup);
-                addLineToTree(components.current[lastPin[0]].visual);
+                iterTillTreeStart(components.current[lastPin[0][0]].visual, newGroup);
+                addLineToTree(components.current[lastPin[0][0]].visual);
             }
 
             return newGroup;
@@ -628,8 +628,8 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
 
                 if (components.current[droppedBlock.ID].pins["@1"]) {
 
-                    let parentBlock = components.current[components.current[droppedBlock.ID].pins["@1"][0]].visual;
-                    let parentPin = parentBlock.getObjects().filter(obj => (obj.idx && obj.idx === components.current[droppedBlock.ID].pins["@1"][1]))[0];
+                    let parentBlock = components.current[components.current[droppedBlock.ID].pins["@1"][0][0]].visual;
+                    let parentPin = parentBlock.getObjects().filter(obj => (obj.idx && obj.idx === components.current[droppedBlock.ID].pins["@1"][0][1]))[0];
 
                     if (!isNearPin(inpPinCoords, parentPin, parentBlock, 20)) {
 
@@ -641,16 +641,16 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
 
                         let curBlock = contractionHandler(canvas, droppedBlock, parentBlock, parentPin);
                         if (components.current[curBlock.ID].pins["@1"]) {
-                            let upBlock = components.current[components.current[curBlock.ID].pins["@1"][0]].visual;
-                            let upPin = upBlock.getObjects().filter(obj => (obj.idx && obj.idx === components.current[curBlock.ID].pins["@1"][1]))[0];
+                            let upBlock = components.current[components.current[curBlock.ID].pins["@1"][0][0]].visual;
+                            let upPin = upBlock.getObjects().filter(obj => (obj.idx && obj.idx === components.current[curBlock.ID].pins["@1"][0][1]))[0];
                             // console.log("abc:", upBlock, upPin)
 
                             while (upBlock) {
-                                console.log("conexp", curBlock.ID, upBlock.ID);
+                                // console.log("conexp", curBlock.ID, upBlock.ID);
                                 curBlock = expansionHandler(canvas, curBlock, upBlock, upPin);
                                 if (components.current[curBlock.ID].pins["@1"]) {
-                                    upBlock = components.current[components.current[curBlock.ID].pins["@1"][0]].visual;
-                                    upPin = upBlock.getObjects().filter(obj => (obj.idx && obj.idx === components.current[curBlock.ID].pins["@1"][1]))[0];
+                                    upBlock = components.current[components.current[curBlock.ID].pins["@1"][0][0]].visual;
+                                    upPin = upBlock.getObjects().filter(obj => (obj.idx && obj.idx === components.current[curBlock.ID].pins["@1"][0][1]))[0];
                                 } else {
                                     upBlock = null;
                                     upPin = null;
@@ -688,8 +688,8 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
                 }
 
                 if (nearPin) {
-                    components.current[droppedBlock.ID].pins[inpPin.idx] = [nearBlock.ID, nearPin.idx];
-                    components.current[nearBlock.ID].pins[nearPin.idx] = [droppedBlock.ID, inpPin.idx];
+                    components.current[droppedBlock.ID].pins[inpPin.idx] = [[nearBlock.ID, nearPin.idx]];
+                    components.current[nearBlock.ID].pins[nearPin.idx] = [[droppedBlock.ID, inpPin.idx]];
 
                     let changeCoords = [nearPinCoords[0] - inpPinCoords.x, nearPinCoords[1] - inpPinCoords.y];
                     snapWithChildren(droppedBlock, changeCoords);
@@ -704,8 +704,8 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
                             
                             currentBlock = expansionHandler(canvas, currentBlock, upperBlock, upperPin);;
                             if (components.current[currentBlock.ID].pins["@1"]) {
-                                upperBlock = components.current[components.current[currentBlock.ID].pins["@1"][0]].visual;
-                                upperPin = upperBlock.getObjects().filter(obj => (obj.idx && obj.idx === components.current[currentBlock.ID].pins["@1"][1]))[0];
+                                upperBlock = components.current[components.current[currentBlock.ID].pins["@1"][0][0]].visual;
+                                upperPin = upperBlock.getObjects().filter(obj => (obj.idx && obj.idx === components.current[currentBlock.ID].pins["@1"][0][1]))[0];
                             } else {
                                 upperBlock = null;
                                 upperPin = null;
@@ -722,7 +722,7 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
                     while (parent) {
                         let newRelativeCoords = [droppedBlock.left - parent.left, droppedBlock.top - parent.top];
                         forest.current[parent.ID][droppedBlock.ID] = [newRelativeCoords[0], newRelativeCoords[1]];
-                        parent = components.current[parent.ID].pins["@1"] ? components.current[components.current[parent.ID].pins["@1"][0]].visual : null;
+                        parent = components.current[parent.ID].pins["@1"] ? components.current[components.current[parent.ID].pins["@1"][0][0]].visual : null;
                     }
 
                     addLineToTree(droppedBlock);
@@ -788,11 +788,11 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
             });
 
             if (lastPin) {
-                snapWithChildren(components.current[lastPin[0]].visual, [0, Yext + nearPin.side[0] - nearPin.side[1]]);
+                snapWithChildren(components.current[lastPin[0][0]].visual, [0, Yext + nearPin.side[0] - nearPin.side[1]]);
                 canvas.renderAll();
 
-                iterTillTreeStart(components.current[lastPin[0]].visual, newGroup);
-                addLineToTree(components.current[lastPin[0]].visual);
+                iterTillTreeStart(components.current[lastPin[0][0]].visual, newGroup);
+                addLineToTree(components.current[lastPin[0][0]].visual);
             }
 
             return newGroup;

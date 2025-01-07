@@ -13,7 +13,7 @@ export function Loader() {
             }));
         });
 
-        console.log("comps loaded");
+        //console.log("comps loaded");
 
         return { name: Json["name"], type: Json["type"] };
     };

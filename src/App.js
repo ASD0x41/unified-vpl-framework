@@ -21,7 +21,7 @@ function App() {
   const [libraryComponents, setLibraryComponents] = useState({});
 
   useEffect(() => {
-    fetch('/samples/block.json')
+    fetch('/samples/data.json')
       .then((response) => response.json())
       .then((jsonData) => {
         const comps = jsonData["components"];

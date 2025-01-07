@@ -9,7 +9,7 @@ export function Compiler(components) {
     
         Object.keys(components.current[block].pins).forEach((pin) => {
             if (components.current[block].pins[pin] && pin.at(0) === '$') {
-                let replacementCode = getCode(components.current[block].pins[pin][0]);
+                let replacementCode = getCode(components.current[block].pins[pin][0][0]);
     
                 let tabcount = 0;
                 for (let i = 0; i < lines.length; i++) {
@@ -99,7 +99,7 @@ export function Compiler(components) {
                 if (comp)
                     compCount++;
             });
-            console.log(compCount);
+            //console.log(compCount);
     
             if (compCount !== 0) {
                 let main = 0;
@@ -109,6 +109,7 @@ export function Compiler(components) {
                         Object.keys(component.props).forEach((prop) => {
                             compCode = compCode.replace(prop, component.props[prop][1]);
                         });
+                        //console.log(component.id, compCode)
                         component.compcode = compCode;
             
                         if (component.id === "main") {
@@ -118,6 +119,7 @@ export function Compiler(components) {
                 });
             
                 if (main !== 0) {
+                    //console.log(main)
                     let progCode = getCode(main);
                     progCode = progCode.replaceAll("\n\n", "\n");
                     let newprogCode = progCode.replaceAll("\t", "    ");
