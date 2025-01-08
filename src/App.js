@@ -16,7 +16,151 @@ function App() {
   const [libExtension, setLibExtension] = useState(false);
   const [logMessages, setLogMessages] = useState([]);
   // const [libraryComponents, setLibraryComponents] = useState({});
-  const [libraryComponents, setLibraryComponents] = useState({ "main": { "id": "main", "label": "Start", "style": { "type": "rect", "left": 0, "top": 0, "width": 100, "height": 50, "fill": "black" }, "text": { "content": "Start", "fontSize": 14, "fill": "white", "textAlign": "center", "area": [[0, 0], [100, 50]] }, "dimensions": [100, 50], "inpins": [], "outpins": [[50, 50, "bottom"]], "props": [], "code": "$1" }, "input": { "id": "input", "label": "Read", "style": { "type": "rect", "left": 0, "top": 0, "width": 100, "height": 50, "fill": "blue" }, "text": { "content": "Read", "fontSize": 14, "fill": "white", "textAlign": "center", "area": [[0, 0], [100, 50]] }, "dimensions": [100, 50], "inpins": [[50, 0, "top"]], "outpins": [[50, 50, "bottom"]], "props": ["varname", "prompt"], "code": "#1 = input(#2)\n$1" }, "output": { "id": "output", "label": "Write", "style": { "type": "rect", "left": 0, "top": 0, "width": 100, "height": 50, "fill": "green" }, "text": { "content": "Write", "fontSize": 14, "fill": "white", "textAlign": "center", "area": [[0, 0], [100, 50]] }, "dimensions": [100, 50], "inpins": [[50, 0, "top"]], "outpins": [[50, 50, "bottom"]], "props": ["content"], "code": "print(#1)\n$1" }, "condition": { "id": "condition", "label": "If-Else", "style": { "type": "rect", "left": 0, "top": 0, "width": 100, "height": 50, "fill": "red" }, "text": { "content": "If-Else", "fontSize": 14, "fill": "black", "textAlign": "center", "area": [[0, 0, "top"], [100, 50, "top"]] }, "dimensions": [100, 50], "inpins": [[50, 0, "top"]], "outpins": [[25, 50, "bottom"], [75, 50, "bottom"]], "props": ["condition"], "code": "if #1:\n\t$1\nelse:\n\t$2" } });
+  const [libraryComponents, setLibraryComponents] = useState({
+    "main": {
+      "id": "main",
+      "label": "Start",
+      "style": {
+        "type": "polygon",
+        "points": [
+          { "x": 0, "y": 0 },
+          { "x": 45, "y": 0 },
+          { "x": 50, "y": 5 },
+          { "x": 55, "y": 0 },
+          { "x": 100, "y": 0 },
+          { "x": 100, "y": 50 },
+          { "x": 55, "y": 50 },
+          { "x": 50, "y": 55 },
+          { "x": 45, "y": 50 },
+          { "x": 0, "y": 50 }
+        ],
+        "fill": "black"
+      },
+      "text": {
+        "content": "Start",
+        "fontSize": 14,
+        "fill": "white",
+        "textAlign": "center",
+        "area": [[0, 0], [100, 50]]
+      },
+      "dimensions": [100, 50],
+      "inpins": [],
+      "outpins": [[50, 50, "bottom"]],
+      "props": [],
+      "code": "$1"
+    },
+
+    "input": {
+      "id": "input",
+      "label": "Read",
+      "style": {
+        "type": "polygon",
+        "points": [
+          { "x": 0, "y": 0 },
+          { "x": 45, "y": 0 },
+          { "x": 50, "y": 5 },
+          { "x": 55, "y": 0 },
+          { "x": 100, "y": 0 },
+          { "x": 100, "y": 50 },
+          { "x": 55, "y": 50 },
+          { "x": 50, "y": 55 },
+          { "x": 45, "y": 50 },
+          { "x": 0, "y": 50 }
+        ],
+        "fill": "blue"
+      },
+      "text": {
+        "content": "Read",
+        "fontSize": 14,
+        "fill": "white",
+        "textAlign": "center",
+        "area": [[0, 0], [100, 50]]
+      },
+      "dimensions": [100, 50],
+      "inpins": [[50, 0, "top"]],
+      "outpins": [[50, 50, "bottom"]],
+      "props": ["varname", "prompt"],
+      "code": "#1 = input(#2)\n$1"
+    },
+
+    "output": {
+      "id": "output",
+      "label": "Write",
+      "style": {
+        "type": "polygon",
+        "points": [
+          { "x": 0, "y": 0 },
+          { "x": 45, "y": 0 },
+          { "x": 50, "y": 5 },
+          { "x": 55, "y": 0 },
+          { "x": 100, "y": 0 },
+          { "x": 100, "y": 50 },
+          { "x": 55, "y": 50 },
+          { "x": 50, "y": 55 },
+          { "x": 45, "y": 50 },
+          { "x": 0, "y": 50 }
+        ],
+        "fill": "green"
+      },
+      "text": {
+        "content": "Write",
+        "fontSize": 14,
+        "fill": "white",
+        "textAlign": "center",
+        "area": [[0, 0], [100, 50]]
+      },
+      "dimensions": [100, 50],
+      "inpins": [[50, 0, "top"]],
+      "outpins": [[50, 50, "bottom"]],
+      "props": ["content"],
+      "code": "print(#1)\n$1"
+    },
+
+    "condition": {
+      "id": "condition",
+      "label": "If-Else",
+      "style": {
+          "type": "polygon",
+          "points": [
+              { "x": 0, "y": 0 }, 
+              { "x": 45, "y": 0 }, 
+              { "x": 50, "y": 5 }, 
+              { "x": 55, "y": 0 }, 
+              { "x": 100, "y": 0 },
+              { "x": 100, "y": 50 },
+              { "x": 80, "y": 50 },
+              { "x": 75, "y": 55 },
+              { "x": 70, "y": 50 },
+              { "x": 25, "y": 50 },
+              { "x": 25, "y": 75 },
+              { "x": 70, "y": 75 },
+              { "x": 75, "y": 80 },
+              { "x": 80, "y": 75 },
+              { "x": 100, "y": 75 },
+              { "x": 100, "y": 100 },
+              { "x": 55, "y": 100 },
+              { "x": 50, "y": 105 },
+              { "x": 45, "y": 100 },
+              { "x": 0, "y": 100 }
+          ],
+          "fill": "red"
+      },
+      "text": {
+          "content": "If-Else",
+          "fontSize": 14,
+          "fill": "black",
+          "textAlign": "center",
+          "area": [[0,0],[100,50]]
+      },
+      "dimensions": [100,100],
+      "inpins": [[50,0,"top"]],
+      "outpins": [[75,50,"bottom"],[50,100,"bottom"]],
+      "expand-start": [[25,75], [100,50]],
+      "props": ["condition"],
+      "code": "if #1:\n\t$1\nelse:\n\t$2"
+  }
+
+  });
 
   const [draggedComponent, setDraggedComponent] = useState(null);
   const [selectedComponent, setSelectedComponent] = useState(null);
@@ -95,8 +239,8 @@ function App() {
     <Manager>
       <div className="App">
         <Header />
-        <MenuBar clearConsole={clearConsole} canvas={canvasRef} loadComponents={loadVisualLang} setSelectedComponent={setSelectedComponent}/>
-        <Workspace onCanvasReady={handleCanvasReady} draggedComponent={draggedComponent} libComps={libraryComponents} setSelectedComponent={setSelectedComponent}/>
+        <MenuBar clearConsole={clearConsole} canvas={canvasRef} loadComponents={loadVisualLang} setSelectedComponent={setSelectedComponent} />
+        <Workspace onCanvasReady={handleCanvasReady} draggedComponent={draggedComponent} libComps={libraryComponents} setSelectedComponent={setSelectedComponent} />
         <Library libLevel={libExtension} components={libraryComponents} onDragStart={setDraggedComponent} />
         <Console logMessages={logMessages} setLogMessages={setLogMessages} />
         <Panel libLevel={libExtension} setLibLevel={setLibExtension} canvasProps={canvasProps} selectedComponent={selectedComponent} />

@@ -11,6 +11,7 @@
     max-width: 25vw;
 
     z-index: 1;
+    border-top: solid 1px #e7e7e7;
 }
 
 .library .icon-button {
@@ -20,8 +21,9 @@
 #library-title {
     display: inline;
 
-    writing-mode: vertical-rl;  /* Text flows vertically from right to left */
- 
+    writing-mode: vertical-rl;
+    /* Text flows vertically from right to left */
+
     font-weight: normal;
     white-space: nowrap;
 }

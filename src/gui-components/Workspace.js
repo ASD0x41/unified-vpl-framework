@@ -12,6 +12,7 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
         ObjectCounter,
         connections,
         components,
+        expandableAreas,
         isConnecting,
         srcGroup,
         srcPin,
@@ -456,8 +457,8 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
         canvasInstance.renderAll();
     }
 
-    
-    const canvas_vp_count = 9
+
+    const canvas_vp_count = 9;
 
     useEffect(() => {
 
@@ -605,8 +606,128 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
         };
     }, []);
 
+    /* const getCenterCoordinates = (component) => {
+         // Extract properties from compdef
+         const left = component.visual.left; // Assuming style contains left position
+         const top = component.visual.top; // Assuming style contains top position
+         const width = component.visual.width; // Assuming style contains width
+         const height = component.visual.height; // Assuming style contains height
+ 
+         // Calculate center coordinates
+         const centerX = left + width / 2;
+         const centerY = top + height / 2;
+ 
+         return { centerX, centerY };
+     };*/
 
 
+    const insertInCavity = (cavity, IDToAdd) => {
+        const cavGroup = components.current[cavity['ID']];
+        const toAddGroup = components.current[IDToAdd];
+
+        const newTop = cavGroup.visual.top + cavity['topright'][1];
+        const newLeft = cavGroup.visual.left + cavity['bottomleft'][0];
+
+        //aligning with cavity
+        toAddGroup.visual.top = newTop;
+        toAddGroup.visual.left = newLeft;
+
+        // Adjust the width
+
+        const widthAdj = (toAddGroup.visual.left + toAddGroup.visual.width) - (cavGroup.visual.left + cavGroup.visual.width);
+
+        // Find the polygonangle within toAddGroup.visual
+        const polygon = toAddGroup.visual.getObjects().find(obj => obj.type === 'polygon');
+        const textObject = toAddGroup.visual.getObjects().find(obj => obj.type === 'text');
+        // Adjust the type if necessary
+
+        if (polygon) {
+
+            let maxX = 0;
+            polygon.points.forEach(point => {
+                if (point.x > maxX) {
+                    maxX = point.x;
+                }
+            })
+            polygon.points.forEach(point => {
+                if (point.x === maxX) {
+                    point.x -= widthAdj
+                }
+            })
+
+
+
+            polygon.setCoords(); // Update the object's coordinates
+
+
+            // Calculate the new center position for the text
+            const polygonBoundingRect = polygon.getBoundingRect();
+            const newCenterX = polygonBoundingRect.left + polygonBoundingRect.width / 2;
+            const newCenterY = polygonBoundingRect.top + polygonBoundingRect.height / 2;
+
+            // Center the text object
+            if (textObject) {
+                textObject.set({
+                    left: newCenterX - textObject.width / 2, // Center horizontally
+                    top: newCenterY - textObject.height / 2 // Center vertically
+                });
+                textObject.setCoords(); // Update the text object's coordinates
+            }
+
+            toAddGroup.visual.setCoords(); // Update the group's coordinates
+
+
+            // Render the canvas to reflect changes
+            canvasRef.current.renderAll();
+        } else {
+            console.log("No polygon found in the group.");
+        }
+        const cavityPolygon = cavGroup.visual.getObjects().find(obj => obj.type === 'polygon');
+
+        if (cavityPolygon) {
+            cavityPolygon.points.forEach(point => {
+                if (point.y >= cavity['bottomleft'][1]) {
+
+                    point.y += toAddGroup.visual.height;
+
+                }
+            })
+            let matchingPins = [];
+            let maxY = -Infinity
+
+            cavGroup.visual.getObjects().forEach(obj => {
+
+                if (obj.type === 'circle') {
+                    if (obj.top > maxY) {
+                        maxY = obj.top
+                    }
+                }
+            });
+            cavGroup.visual.getObjects().forEach(obj => {
+
+                if (obj.type === 'circle' && obj.top === maxY) {
+                    matchingPins.push(obj)
+                }
+            });
+            matchingPins.forEach(pin => {
+                pin.top += toAddGroup.visual.height;
+                pin.setCoords();
+                pin.dirty = true;
+            });
+            cavityPolygon.dirty = true;
+            cavityPolygon.setCoords();
+            cavGroup.visual.dirty = true; // Mark the group as dirty
+            cavGroup.visual.setCoords(); // Update group's coordinates
+            canvasRef.current.requestRenderAll(); // Explicitly request render
+
+        } else {
+            console.log("cavPolygon not found!")
+        }
+        console.log(components.current);
+        cavity['topright'][1] += toAddGroup.visual.height - 5 - 4;
+        cavity['bottomleft'][1] += toAddGroup.visual.height - 5 - 4;
+
+    }
     useEffect(() => {
         const canvasInstance = canvasRef.current;
 
@@ -617,7 +738,17 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
                 e.stopPropagation();
                 const pointer = canvasInstance.getPointer(e);
                 const id = draggedComponent;
-                const compdef = libComps[id];
+                const compdef = libComps[id];//contains expand-start
+
+                if ('expand-start' in compdef) {
+                    const expandInfo = {
+                        ID: ObjectCounter.current + 1,
+                        bottomleft: compdef['expand-start'][0],
+                        topright: compdef['expand-start'][1]
+                    }
+                    expandableAreas.current.push(expandInfo);
+                    console.log("Logging expandableAreas", expandableAreas);
+                }
 
                 fabric.util.enlivenObjects([compdef], (objects) => {
                     const group = generateGroupedComponent(compdef);
@@ -653,9 +784,30 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
 
                     // console.log(comp);
                     components.current.push(comp)
+                    //console.log("logging group just added: ", comp);
+                    //const centre = getCenterCoordinates(comp);
+                    expandableAreas.current.forEach(cavity => {
 
+                        if (cavity['ID'] !== comp['ID']) {
+                            console.log("Checking if object has been dropped on a cavity", pointer);
+                            const horBoundary = [components.current[cavity['ID']].visual.left + cavity['bottomleft'][0], components.current[cavity['ID']].visual.left + cavity['topright'][0]];
+
+                            const verBoundary = [components.current[cavity['ID']].visual.top + cavity['topright'][1], components.current[cavity['ID']].visual.top + cavity['bottomleft'][1]]
+
+
+                            if (pointer.x >= horBoundary[0] &&
+                                pointer.x <= horBoundary[1] &&
+                                pointer.y >= verBoundary[0] &&
+                                pointer.y <= verBoundary[1]) {
+                                console.log("Trying to place in cavity")
+                                insertInCavity(cavity, comp['ID']);
+                            }
+                        }
+                    })
                     canvasInstance.add(comp.visual);
+                    //console.log("Logging all current groups:", components.current);
                 });
+
 
             };
 

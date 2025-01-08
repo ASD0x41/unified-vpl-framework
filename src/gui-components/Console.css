@@ -8,6 +8,7 @@
     max-width: calc(75vw - 40px);
 
     z-index: 1;
+    
 }
 
 .console .icon-button {
@@ -74,9 +75,11 @@
 }
 
 .console-log {
-    color: #00ff00; /* Green for logs */
-  }
-  
-  .console-error {
-    color: #ff0000; /* Red for errors */
-  }
+    color: #00ff00;
+    /* Green for logs */
+}
+
+.console-error {
+    color: #ff0000;
+    /* Red for errors */
+}

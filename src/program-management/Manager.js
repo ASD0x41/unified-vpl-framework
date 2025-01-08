@@ -10,7 +10,7 @@ export const Manager = ({ children }) => {
 
     const connections = useRef([]);
     const components = useRef([{}]);
-
+    const expandableAreas = useRef([]);
     const isConnecting = useRef(false);
     const srcGroup = useRef(null);
     const srcPin = useRef(null);
@@ -23,6 +23,7 @@ export const Manager = ({ children }) => {
             ObjectCounter,
             connections,
             components,
+            expandableAreas,
             isConnecting,
             srcGroup,
             srcPin,
