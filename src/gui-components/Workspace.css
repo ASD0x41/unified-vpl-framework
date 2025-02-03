@@ -1,0 +1,10 @@
+.workspace {
+    display: flex;
+    flex-direction: column;
+
+    grid-column: 2 / 4;
+    grid-row: 2 / 4;
+
+    background-color: #d1d1d1;
+    overflow: hidden;
+}

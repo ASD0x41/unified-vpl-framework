@@ -1,0 +1,81 @@
+.library {
+    grid-column: 3 / 5;
+    grid-row: 2 / 3;
+
+    background-color: #333;
+    color: white;
+
+    transition: width 0.3s ease;
+
+    overflow-y: auto;
+    max-width: 25vw;
+
+    z-index: 1;
+    /* border: 1px solid #444; */
+    /* border-left: 1px solid #111; */
+    /* border-top: 1px solid #444 */
+}
+
+.library .icon-button {
+    background-color: #333;
+}
+
+#library-title {
+    display: inline;
+
+    writing-mode: vertical-rl;  /* Text flows vertically from right to left */
+ 
+    font-weight: normal;
+    white-space: nowrap;
+}
+
+#library-output {
+    background-color: #555;
+    color: #fff;
+
+    margin: 10px 10px 5px 10px;
+    padding: 10px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    overflow-y: auto;
+    overflow-x: auto;
+
+    height: calc(100% - 50px);
+    width: calc(100% - 20px);
+
+    max-width: calc(100% - 20px);
+    border-radius: 10px;
+
+    font-family: monospace;
+}
+
+#library-output::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+#library-output::-webkit-scrollbar-track {
+    background: #555;
+}
+
+#library-output::-webkit-scrollbar-thumb {
+    background-color: #333;
+    border-radius: 10px;
+    border: 2px solid #555;
+}
+
+#library-output::-webkit-scrollbar-thumb:hover {
+    background-color: #666;
+}
+
+#library-output::-webkit-scrollbar-corner {
+    background-color: #555;
+}
+
+/* .visual {
+    margin-left: auto;
+    margin-right: auto;
+} */

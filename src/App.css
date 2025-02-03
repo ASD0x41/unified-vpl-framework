@@ -1,0 +1,55 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  /* font-family: Georgia, serif; */
+  overflow: hidden;
+}
+
+.App {
+  display: grid;
+
+  grid-template-columns: 40px 1fr calc(25vw - 40px) 40px;
+  grid-template-rows: 40px calc(60vh - 40px) calc(40vh - 40px) 40px;
+
+  height: 100vh;
+}
+
+#spinner-overlay {
+  font-family: "Century Schoolbook", serif;
+  font-variant: small-caps;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.5s ease-out;
+}
+
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}

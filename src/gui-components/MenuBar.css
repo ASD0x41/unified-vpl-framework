@@ -1,0 +1,31 @@
+.menu-bar {
+    grid-column: 1 / 2;
+    grid-row: 2 / 5;
+
+    background-color: #222;
+
+    padding: 5px;
+
+    /* border: 1px solid #444; */
+    /* border-right: 1px solid #111; */
+}
+
+.button-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.icon-button {
+    background-color: #333;
+    color: white;
+
+    width: 30px;
+    height: 30px;
+
+    margin-bottom: 5px;
+
+    border: none;
+    padding: 4px;
+
+    cursor: pointer;
+}

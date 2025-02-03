@@ -1,0 +1,90 @@
+.console {
+    grid-column: 2 / 3;
+    grid-row: 4 / 5;
+
+    background-color: #333;
+    color: white;
+
+    max-width: calc(75vw - 40px);
+
+    z-index: 1;
+
+    /* border: 1px solid #444; */
+    /* border-top: 1px solid #111; */
+}
+
+.console .icon-button {
+    background-color: #333;
+}
+
+.console-output {
+    background-color: #222;
+    color: #fff;
+
+    margin: 10px 10px 0px 10px;
+    padding: 10px;
+    overflow-y: auto;
+    overflow-x: auto;
+
+    height: calc(100% - 90px);
+    width: calc(100% - 20px);
+
+    max-width: calc(100% - 20px);
+    border-radius: 10px;
+
+    display: block;
+    font-family: monospace;
+}
+
+.console-output::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.console-output::-webkit-scrollbar-track {
+    background: #222;
+}
+
+.console-output::-webkit-scrollbar-thumb {
+    background-color: #333;
+    border-radius: 10px;
+    border: 2px solid #222;
+}
+
+.console-output::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}
+
+.console-output::-webkit-scrollbar-corner {
+    background-color: #333;
+}
+
+#console-input {
+    color: #F5F5F5;
+    background-color: #111;
+
+    width: calc(100% - 20px);
+    height: 30px;
+
+    border-width: 0px;
+    margin: 10px 10px 10px 10px;
+    padding: 8px;
+
+    box-shadow: none;
+    border-radius: 2px;
+
+    font-family: monospace;
+}
+
+#console-input:focus {
+    outline: none;
+    /* border-color: #007bff; */
+}
+
+.console-log {
+    color: #00ff00; /* Green for logs */
+  }
+  
+  .console-error {
+    color: #ff0000; /* Red for errors */
+  }

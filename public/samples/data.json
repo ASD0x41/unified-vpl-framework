@@ -1,0 +1,147 @@
+{
+    "name": "DataLang",
+    "type": "dataflow",
+    "version": "0.1.0",
+    "components": [
+        {
+            "id": "input",
+            "label": "Read",
+            "style": {
+                "type": "circle",
+                "left": 0,
+                "top": 0,
+                "radius": 25,
+                "fill": "blue"
+            },
+            "text": [
+                {
+                    "content": "Input",
+                    "fontSize": 14,
+                    "fill": "white",
+                    "textAlign": "center",
+                    "area": [[0,0],[50,50]]
+                }
+            ],
+            "dimensions": [50,50],
+            "inpins": [],
+            "outpins": [[25,50,"bottom"]],
+            "props": ["prompt"],
+            "code": "$1 = input(#1)"
+        },
+        {
+            "id": "output",
+            "label": "Write",
+            "style": {
+                "type": "circle",
+                "left": 0,
+                "top": 0,
+                "radius": 25,
+                "fill": "green"
+            },
+            "text": [
+                {
+                    "content": "Output",
+                    "fontSize": 14,
+                    "fill": "white",
+                    "textAlign": "center",
+                    "area": [[0,0],[50,50]]
+                }
+            ],
+            "dimensions": [50,50],
+            "inpins": [[25,0,"top"]],
+            "outpins": [],
+            "props": [],
+            "code": "print(@1)"
+        },
+        {
+            "id": "literal",
+            "label": "Const",
+            "style": {
+                "type": "rect",
+                "left": 0,
+                "top": 0,
+                "width": 100,
+                "height": 50,
+                "fill": "purple"
+            },
+            "text": [
+                {
+                    "content": "Constant",
+                    "fontSize": 14,
+                    "fill": "white",
+                    "textAlign": "center",
+                    "area": [[0,0],[100,50]]
+                }
+            ],
+            "dimensions": [100,50],
+            "inpins": [],
+            "outpins": [[50,50,"bottom"]],
+            "props": ["value"],
+            "code": "$1 = #1"
+        },
+        {
+            "id": "condition",
+            "label": "If-Else",
+            "style": {
+                "type": "polygon",
+                "points": [
+                    { "x": 50, "y": 0 },
+                    { "x": 100, "y": 50 },
+                    { "x": 50, "y": 100 },
+                    { "x": 0, "y": 50 }
+                ],
+                "left": 0,
+                "top": 0,
+                "width": 100,
+                "height": 100,
+                "fill": "red"
+            },
+            "text": [
+                {
+                    "content": "Selector",
+                    "fontSize": 14,
+                    "fill": "black",
+                    "textAlign": "center",
+                    "area": [[0,0],[100,100]]
+                }
+            ],
+            "dimensions": [100,100],
+            "inpins": [[50,0,"top"],[0,50,"left"],[100,50,"right"]],
+            "outpins": [[50,100,"bottom"]],
+            "props": [],
+            "code": "if @1:\n\t$1 = @2\nelse:\n\t$1 = @3"
+        },
+        {
+            "id": "equality",
+            "label": "IsEqual?",
+            "style": {
+                "type": "polygon",
+                "points": [
+                    { "x": 25, "y": 0 },
+                    { "x": 50, "y": 25 },
+                    { "x": 25, "y": 50 },
+                    { "x": 0, "y": 25 }
+                ],
+                "left": 0,
+                "top": 0,
+                "width": 50,
+                "height": 50,
+                "fill": "red"
+            },
+            "text": [
+                {
+                    "content": "==",
+                    "fontSize": 14,
+                    "fill": "black",
+                    "textAlign": "center",
+                    "area": [[0,0],[50,50]]
+                }
+            ],
+            "dimensions": [50,50],
+            "inpins": [[0,25,"left"],[50,25,"right"]],
+            "outpins": [[25,50,"bottom"]],
+            "props": [],
+            "code": "$1 = @1 == @2"
+        }
+    ]
+}

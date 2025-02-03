@@ -1,0 +1,55 @@
+.module-title-bar {
+    padding: 5px;
+    height: 30px;
+
+    
+}
+
+.title-bar {
+    grid-column: 1 / 5;
+    grid-row: 1 / 2;
+
+    display: grid;
+    grid-template-columns: 1fr 4fr 1fr;
+
+    background-color: #222;
+    color: white;
+
+    height: 40px;
+    
+    -webkit-app-region: drag;
+
+    /* border-bottom: 1px solid #111; */
+}
+
+.app-icon {
+    padding-left: 4px;
+    padding-top: 6px;
+}
+
+.app-icon img {
+    max-width: 27px;
+    max-height: 27px;
+}
+
+.app-name {
+    justify-self: center;
+    padding: 10px;
+    -webkit-app-region: drag
+}
+
+.window-controls {
+    justify-self: right;
+    padding: 9px;
+    -webkit-app-region: no-drag;
+}
+
+.window-controls button {
+    background-color: transparent;
+    color: white;
+
+    border: none;
+    padding: 0 10px;
+
+    cursor: pointer;
+}
