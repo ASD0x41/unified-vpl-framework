@@ -1,4 +1,4 @@
-# Unified VPL Framework
+# VPLForge - A Unified VPL Framework
 
 **A unified framework for the development and use of visual programming languages (VPLs) belonging to the block-based, flowchart-based, and dataflow-based paradigms.**
 
@@ -6,7 +6,7 @@
 
 Visual Programming Languages (VPLs) are increasingly important across various domains such as low-code development, end-user programming, robotics, IoT, and educational coding environments. However, the VPL ecosystem lacks standardization, and creating a new VPL is not as streamlined as creating a new textual programming language (TPL), which benefits from robust toolchains like Flex, Bison, and LLVM.
 
-This **Unified VPL Framework** aims to solve this problem by providing a single platform for both the development and use of various VPLs. It enables developers to easily define new VPLs by writing a JSON file that describes the visual components, backend code, and other properties. This JSON definition is then rendered into a visual programming interface where users can drag-and-drop components onto a canvas and create visual programs.
+**VPLForge** aims to solve this problem by providing a single platform for both the development and use of various VPLs. It enables developers to easily define new VPLs by writing a JSON file that describes the visual components, backend code, and other properties. This JSON definition is then rendered into a visual programming interface where users can drag-and-drop components onto a canvas and create visual programs.
 
 The framework transpiles these visual programs into Python (with potential future support for other languages), compiles the Python code to WebAssembly using Pyodide, and executes the resulting code in an embedded console. The platform is implemented in React and packaged as a desktop app via Electron for offline use, enhanced performance, and improved privacy.
 
@@ -29,14 +29,11 @@ You can try a web demo [here](https://web.nullprime.com/unified-vpl-framework).
 
 You can try out demos of the different visual programming language paradigms:
 
-- **Block-based:** [Demo](https://web.nullprime.com/unified-vpl-framework/?type=block)
-  - [block.json definition](https://web.nullprime.com/unified-vpl-framework/samples/block.json)
-- **Flowchart-based:** [Demo](https://web.nullprime.com/unified-vpl-framework/?type=flow)
-  - [flow.json definition](https://web.nullprime.com/unified-vpl-framework/samples/flow.json)
-- **Dataflow-based:** [Demo](https://web.nullprime.com/unified-vpl-framework/?type=data)
-  - [data.json definition](https://web.nullprime.com/unified-vpl-framework/samples/data.json)
+- **BlockLang (Block-based):** [Demo](https://web.nullprime.com/unified-vpl-framework/?type=block) ([language definition](https://web.nullprime.com/unified-vpl-framework/samples/block.json))
+- **LangFlow (Flowchart-based):** [Demo](https://web.nullprime.com/unified-vpl-framework/?type=flow) ([language definition](https://web.nullprime.com/unified-vpl-framework/samples/flow.json))
+- **DataFlow (Dataflow-based):** [Demo](https://web.nullprime.com/unified-vpl-framework/?type=data) ([language definition](https://web.nullprime.com/unified-vpl-framework/samples/data.json))
 
-Documentation will be available [here](https://web.nullprime.com/unified-vpl-framework/docs/).
+See the [documentation](https://web.nullprime.com/unified-vpl-framework/docs/) to learn how to design languages in the format supported by the framework.
 
 ## Installation
 
