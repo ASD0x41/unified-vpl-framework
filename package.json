@@ -40,8 +40,7 @@
     "desktop": "concurrently \"yarn react-start\" \"wait-on http://localhost:3000 && yarn electron-start\"",
     "react-start": "react-app-rewired start",
     "electron-start": "electron . --disable-gpu",
-    "package": "yarn build && electron-builder",
-    "deploy": "yarn build && node deploy.js"
+    "package": "yarn build && electron-builder"
   },
   "eslintConfig": {
     "extends": [

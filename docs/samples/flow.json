@@ -1,0 +1,503 @@
+{
+    "name": "LangFlow",
+    "type": "flowchart",
+    "version": "0.1.0",
+    "components": [
+        {
+            "id": "main",
+            "style": {
+                "type": "rect",
+                "left": 0,
+                "top": 0,
+                "width": 100,
+                "height": 50,
+                "fill": "black"
+            },
+            "text": [
+                {
+                    "content": "START",
+                    "fontSize": 14,
+                    "fill": "white",
+                    "textAlign": "center",
+                    "area": [[15,0],[85,50]],
+                    "prop": null
+                }
+            ],
+            "dimensions": [100,50],
+            "inpins": [],
+            "outpins": [[50,50,"bottom"]],
+            "props": [],
+            "code": "$1"
+        },
+        {
+            "id": "var",
+            "style": {
+                "type": "rect",
+                "left": 0,
+                "top": 0,
+                "width": 100,
+                "height": 60,
+                "fill": "purple"
+            },
+            "text": [
+                {
+                    "content": "DECLARE",
+                    "fontSize": 14,
+                    "fill": "white",
+                    "textAlign": "center",
+                    "area": [[15,0],[85,35]],
+                    "prop": null
+                },
+                {
+                    "content": "_",
+                    "fontSize": 14,
+                    "fill": "white",
+                    "textAlign": "center",
+                    "area": [[15,25],[40,60]],
+                    "prop": "varname"
+                },
+                {
+                    "content": "=",
+                    "fontSize": 14,
+                    "fill": "white",
+                    "textAlign": "center",
+                    "area": [[40,25],[60,60]],
+                    "prop": null
+                },
+                {
+                    "content": "_",
+                    "fontSize": 14,
+                    "fill": "white",
+                    "textAlign": "center",
+                    "area": [[60,25],[85,60]],
+                    "prop": "value"
+                }
+            ],
+            "dimensions": [100,60],
+            "inpins": [[50,0,"top",0]],
+            "outpins": [[50,60,"bottom",0]],
+            "props": ["varname","value"],
+            "code": "#1 = #2\n$1"
+        },
+        {
+            "id": "oper",
+            "style": {
+                "type": "rect",
+                "left": 0,
+                "top": 0,
+                "width": 100,
+                "height": 60,
+                "fill": "indigo"
+            },
+            "text": [
+                {
+                    "content": "DO",
+                    "fontSize": 14,
+                    "fill": "white",
+                    "textAlign": "center",
+                    "area": [[15,0],[85,35]],
+                    "prop": null
+                },
+                {
+                    "content": "",
+                    "fontSize": 14,
+                    "fill": "white",
+                    "textAlign": "center",
+                    "area": [[15,25],[85,50]],
+                    "prop": "code"
+                }
+            ],
+            "dimensions": [100,60],
+            "inpins": [[50,0,"top",0]],
+            "outpins": [[50,60,"bottom",0]],
+            "props": ["code"],
+            "code": "#1\n$1"
+        },
+        {
+            "id": "input-str",
+            "style": {
+                "type": "rect",
+                "left": 0,
+                "top": 0,
+                "width": 100,
+                "height": 60,
+                "fill": "blue"
+            },
+            "text": [
+                {
+                    "content": "STR INPUT",
+                    "fontSize": 14,
+                    "fill": "white",
+                    "textAlign": "center",
+                    "area": [[15,0],[85,35]],
+                    "prop": null
+                },
+                {
+                    "content": "",
+                    "fontSize": 14,
+                    "fill": "white",
+                    "textAlign": "center",
+                    "area": [[15,25],[85,50]],
+                    "prop": "varname"
+                }
+            ],
+            "dimensions": [100,60],
+            "inpins": [[50,0,"top",0]],
+            "outpins": [[50,60,"bottom",0]],
+            "props": ["varname","prompt"],
+            "code": "#1 = input(#2)\n$1"
+        },
+        {
+            "id": "input-int",
+            "style": {
+                "type": "rect",
+                "left": 0,
+                "top": 0,
+                "width": 100,
+                "height": 60,
+                "fill": "blue"
+            },
+            "text": [
+                {
+                    "content": "INT INPUT",
+                    "fontSize": 14,
+                    "fill": "white",
+                    "textAlign": "center",
+                    "area": [[15,0],[85,35]],
+                    "prop": null
+                },
+                {
+                    "content": "",
+                    "fontSize": 14,
+                    "fill": "white",
+                    "textAlign": "center",
+                    "area": [[15,25],[85,50]],
+                    "prop": "varname"
+                }
+            ],
+            "dimensions": [100,60],
+            "inpins": [[50,0,"top",0]],
+            "outpins": [[50,60,"bottom",0]],
+            "props": ["varname","prompt"],
+            "code": "#1 = int(input(#2))\n$1"
+        },
+        {
+            "id": "output",
+            "style": {
+                "type": "rect",
+                "left": 0,
+                "top": 0,
+                "width": 100,
+                "height": 60,
+                "fill": "green"
+            },
+            "text": [
+                {
+                    "content": "OUTPUT",
+                    "fontSize": 14,
+                    "fill": "white",
+                    "textAlign": "center",
+                    "area": [[15,0],[85,35]],
+                    "prop": null
+                },
+                {
+                    "content": "",
+                    "fontSize": 14,
+                    "fill": "white",
+                    "textAlign": "center",
+                    "area": [[15,25],[85,50]],
+                    "prop": "content"
+                }
+            ],
+            "dimensions": [100,60],
+            "inpins": [[50,0,"top",0]],
+            "outpins": [[50,60,"bottom",0]],
+            "props": ["content"],
+            "code": "print(#1)\n$1"
+        },
+        {
+            "id": "output-fstr",
+            "style": {
+                "type": "rect",
+                "left": 0,
+                "top": 0,
+                "width": 100,
+                "height": 60,
+                "fill": "green"
+            },
+            "text": [
+                {
+                    "content": "PRINT",
+                    "fontSize": 14,
+                    "fill": "white",
+                    "textAlign": "center",
+                    "area": [[15,0],[85,35]],
+                    "prop": null
+                },
+                {
+                    "content": "",
+                    "fontSize": 14,
+                    "fill": "white",
+                    "textAlign": "center",
+                    "area": [[15,25],[85,50]],
+                    "prop": "content"
+                }
+            ],
+            "dimensions": [100,60],
+            "inpins": [[50,0,"top",0]],
+            "outpins": [[50,60,"bottom",0]],
+            "props": ["content"],
+            "code": "print(f\"#1\")\n$1"
+        },
+        {
+            "id": "loop-for",
+            "style": {
+                "type": "polygon",
+                "points": [
+                    { "x": 70, "y": 0 },
+                    { "x": 140, "y": 70 },
+                    { "x": 70, "y": 140 },
+                    { "x": 0, "y": 70 }
+                ],
+                "left": 0,
+                "top": 0,
+                "width": 140,
+                "height": 140,
+                "fill": "brown"
+            },
+            "text": [
+                {
+                    "content": "FOR",
+                    "fontSize": 14,
+                    "fill": "black",
+                    "textAlign": "center",
+                    "area": [[15,20],[125,35]],
+                    "prop": null
+                },
+                {
+                    "content": ">>",
+                    "fontSize": 14,
+                    "fill": "black",
+                    "textAlign": "center",
+                    "area": [[15,60],[35,80]],
+                    "prop": null
+                },
+                {
+                    "content": "_",
+                    "fontSize": 14,
+                    "fill": "black",
+                    "textAlign": "center",
+                    "area": [[25,40],[65,75]],
+                    "prop": "iterator"
+                },
+                {
+                    "content": "=",
+                    "fontSize": 14,
+                    "fill": "black",
+                    "textAlign": "center",
+                    "area": [[65,40],[75,75]],
+                    "prop": null
+                },
+                {
+                    "content": "_",
+                    "fontSize": 14,
+                    "fill": "black",
+                    "textAlign": "center",
+                    "area": [[75,40],[115,75]],
+                    "prop": "start"
+                },
+                {
+                    "content": "TO",
+                    "fontSize": 14,
+                    "fill": "black",
+                    "textAlign": "center",
+                    "area": [[40,65],[70,100]],
+                    "prop": null
+                },
+                {
+                    "content": "_",
+                    "fontSize": 14,
+                    "fill": "black",
+                    "textAlign": "center",
+                    "area": [[70,65],[100,100]],
+                    "prop": "end"
+                },
+                {
+                    "content": ">>",
+                    "fontSize": 14,
+                    "fill": "black",
+                    "textAlign": "center",
+                    "area": [[105,60],[125,80]],
+                    "prop": null
+                },
+                {
+                    "content": "THEN",
+                    "fontSize": 14,
+                    "fill": "black",
+                    "textAlign": "center",
+                    "area": [[15,105],[125,120]],
+                    "prop": null
+                }
+            ],
+            "dimensions": [140,140],
+            "inpins": [[70,0,"top"],[0,70,"left"]],
+            "outpins": [[140,70,"right"],[70,140,"bottom"]],
+            "props": ["iterator", "start", "end", "step"],
+            "code": "for #1 in range(#2, #3, #4):\n\t$1\n$2"
+        },
+        {
+            "id": "loop-while",
+            "style": {
+                "type": "polygon",
+                "points": [
+                    { "x": 70, "y": 0 },
+                    { "x": 140, "y": 70 },
+                    { "x": 70, "y": 140 },
+                    { "x": 0, "y": 70 }
+                ],
+                "left": 0,
+                "top": 0,
+                "width": 140,
+                "height": 140,
+                "fill": "orange"
+            },
+            "text": [
+                {
+                    "content": "WHILE",
+                    "fontSize": 14,
+                    "fill": "black",
+                    "textAlign": "center",
+                    "area": [[15,25],[125,35]],
+                    "prop": null
+                },
+                {
+                    "content": ">>",
+                    "fontSize": 14,
+                    "fill": "black",
+                    "textAlign": "center",
+                    "area": [[15,60],[35,80]],
+                    "prop": null
+                },
+                {
+                    "content": "",
+                    "fontSize": 14,
+                    "fill": "black",
+                    "textAlign": "center",
+                    "area": [[30,40],[110,100]],
+                    "prop": "condition"
+                },
+                {
+                    "content": ">>",
+                    "fontSize": 14,
+                    "fill": "black",
+                    "textAlign": "center",
+                    "area": [[105,60],[125,80]],
+                    "prop": null
+                },
+                {
+                    "content": "THEN",
+                    "fontSize": 14,
+                    "fill": "black",
+                    "textAlign": "center",
+                    "area": [[15,105],[125,115]],
+                    "prop": null
+                }
+            ],
+            "dimensions": [140,140],
+            "inpins": [[70,0,"top"],[0,70,"left"]],
+            "outpins": [[140,70,"right"],[70,140,"bottom"]],
+            "props": ["condition"],
+            "code": "while #1:\n\t$1\n$2"
+        },
+        {
+            "id": "condition",
+            "style": {
+                "type": "polygon",
+                "points": [
+                    { "x": 50, "y": 0 },
+                    { "x": 100, "y": 50 },
+                    { "x": 50, "y": 100 },
+                    { "x": 0, "y": 50 }
+                ],
+                "left": 0,
+                "top": 0,
+                "width": 100,
+                "height": 100,
+                "fill": "violet"
+            },
+            "text": [
+                {
+                    "content": "<<",
+                    "fontSize": 14,
+                    "fill": "black",
+                    "textAlign": "center",
+                    "area": [[15,5],[85,25]],
+                    "prop": null
+                },
+                {
+                    "content": "IF",
+                    "fontSize": 14,
+                    "fill": "black",
+                    "textAlign": "center",
+                    "area": [[15,15],[85,50]],
+                    "prop": null
+                },
+                {
+                    "content": "",
+                    "fontSize": 14,
+                    "fill": "black",
+                    "textAlign": "center",
+                    "area": [[15,25],[85,75]],
+                    "prop": "condition"
+                },
+                {
+                    "content": "ELSE",
+                    "fontSize": 14,
+                    "fill": "black",
+                    "textAlign": "center",
+                    "area": [[15,50],[85,85]],
+                    "prop": null
+                },
+                {
+                    "content": ">>",
+                    "fontSize": 14,
+                    "fill": "black",
+                    "textAlign": "center",
+                    "area": [[15,75],[85,95]],
+                    "prop": null
+                }
+            ],
+            "dimensions": [100,100],
+            "inpins": [[50,0,"top"]],
+            "outpins": [[0,50,"left"],[100,50,"right"]],
+            "props": ["condition"],
+            "code": "if #1:\n\t$1\nelse:\n\t$2\n$1"
+        },
+        {
+            "id": "ret",
+            "style": {
+                "type": "rect",
+                "left": 0,
+                "top": 0,
+                "width": 100,
+                "height": 50,
+                "fill": "black"
+            },
+            "text": [
+                {
+                    "content": "END",
+                    "fontSize": 14,
+                    "fill": "white",
+                    "textAlign": "center",
+                    "area": [[15,0],[85,50]],
+                    "prop": null
+                }
+            ],
+            "dimensions": [100,50],
+            "inpins": [[50,0,"top",0]],
+            "outpins": [],
+            "props": ["retval"],
+            "code": "return #1"
+        }
+    ]
+}
