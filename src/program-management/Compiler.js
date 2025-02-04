@@ -1,6 +1,6 @@
 export function Compiler(components) {
 
-    const getCode = (block) => {
+    const getCode = (block, langtype) => {
         let code = components.current[block].compcode;
         let replacements = {}
         let opinCount = 0;
@@ -11,7 +11,7 @@ export function Compiler(components) {
             if (components.current[block].pins[pin] && pin.at(0) === '$') {
                 if (components.current[block].pins[pin][0][1] === "@1") {
                     // console.log(block, components.current[block].pins[pin][0][0], components.current[block].pins[pin][0][1])
-                    let replacementCode = getCode(components.current[block].pins[pin][0][0]);
+                    let replacementCode = getCode(components.current[block].pins[pin][0][0], langtype);
 
                     let tabcount = 0;
                     for (let i = 0; i < lines.length; i++) {
@@ -24,15 +24,15 @@ export function Compiler(components) {
                             break;
                         }
                     }
-    
+
                     let indent = "\n";
                     for (let i = 0; i < tabcount; i++) {
                         indent += '\t';
                     }
-    
+
                     replacementCode = replacementCode.replaceAll('\n', indent);
                     replacements[pin] = replacementCode;
-                    
+
                 } else {
                     replacements[pin] = '\n';
                 }
@@ -41,7 +41,10 @@ export function Compiler(components) {
         });
 
         if (opinCount === 0) {
-            //code = code.replace(/\$\d+/g, "");
+            if (langtype === 'block') {
+                code = code.replaceAll(/\$\d+/g, "");
+            }
+
         } else {
             Object.keys(replacements).forEach((repl) => {
                 code = code.replace(repl, replacements[repl]);
@@ -126,7 +129,7 @@ export function Compiler(components) {
 
                 if (main !== 0) {
                     //console.log(main)
-                    let progCode = getCode(main);
+                    let progCode = getCode(main, lang.type);
                     progCode = progCode.replaceAll("\n\n", "\n");
                     progCode = progCode.replaceAll("\n", "\n\t");
 
