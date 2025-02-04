@@ -114,7 +114,8 @@ export function generateGroupedComponent(obj, lang) {
                 originY: 'center',
                 left: 0.5 * text.area[0][0] + 0.5 * text.area[1][0] || obj.dimensions[0] + 10 / 2,
                 top: 0.5 * text.area[0][1] + 0.5 * text.area[1][1] || obj.dimensions[1] + 10 / 2,
-                textAlign: text.textAlign || 'center'
+                textAlign: text.textAlign || 'center',
+                prop: text.prop
             });
     
             groupItems.push(textObj);

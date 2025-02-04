@@ -25,7 +25,14 @@ function App() {
       document.getElementById('spinner-overlay').style.display = 'none';
     }, 2000);
 
-    fetch('./samples/block.json')
+    const params = new URLSearchParams(window.location.search);
+    var langtype = params.get('type');
+
+    if (langtype === null) {
+      langtype = 'block';
+    }
+
+    fetch('./samples/' + langtype + '.json')
       .then((response) => response.json())
       .then((jsonData) => {
         const comps = jsonData["components"];
@@ -106,6 +113,16 @@ function App() {
 
     fabric.Circle.prototype.stateProperties.push('idx');
     fabric.Circle.prototype.stateProperties.push('side');
+
+    fabric.Text.prototype.toObject = (function (toObject) {
+      return function () {
+        return fabric.util.object.extend(toObject.call(this), {
+          prop: this.id || null
+        });
+      };
+    })(fabric.Group.prototype.toObject);
+
+    fabric.Group.prototype.stateProperties.push('prop');
 
     canvasRef.current = canvasInstance;
   }, []);

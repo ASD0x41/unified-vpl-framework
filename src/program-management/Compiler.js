@@ -9,33 +9,39 @@ export function Compiler(components) {
 
         Object.keys(components.current[block].pins).forEach((pin) => {
             if (components.current[block].pins[pin] && pin.at(0) === '$') {
-                let replacementCode = getCode(components.current[block].pins[pin][0][0]);
+                if (components.current[block].pins[pin][0][1] === "@1") {
+                    // console.log(block, components.current[block].pins[pin][0][0], components.current[block].pins[pin][0][1])
+                    let replacementCode = getCode(components.current[block].pins[pin][0][0]);
 
-                let tabcount = 0;
-                for (let i = 0; i < lines.length; i++) {
-                    let pinidx = lines[i].indexOf(pin);
-                    if (pinidx !== -1) {
-                        for (let j = 0; j < pinidx; j++) {
-                            if (lines[i][j] === '\t')
-                                tabcount++;
+                    let tabcount = 0;
+                    for (let i = 0; i < lines.length; i++) {
+                        let pinidx = lines[i].indexOf(pin);
+                        if (pinidx !== -1) {
+                            for (let j = 0; j < pinidx; j++) {
+                                if (lines[i][j] === '\t')
+                                    tabcount++;
+                            }
+                            break;
                         }
-                        break;
                     }
+    
+                    let indent = "\n";
+                    for (let i = 0; i < tabcount; i++) {
+                        indent += '\t';
+                    }
+    
+                    replacementCode = replacementCode.replaceAll('\n', indent);
+                    replacements[pin] = replacementCode;
+                    
+                } else {
+                    replacements[pin] = '\n';
                 }
-
-                let indent = "\n";
-                for (let i = 0; i < tabcount; i++) {
-                    indent += '\t';
-                }
-
-                replacementCode = replacementCode.replaceAll('\n', indent);
-                replacements[pin] = replacementCode;
                 opinCount++;
             }
         });
 
         if (opinCount === 0) {
-            code = code.replace(/\$\d+/g, "");
+            //code = code.replace(/\$\d+/g, "");
         } else {
             Object.keys(replacements).forEach((repl) => {
                 code = code.replace(repl, replacements[repl]);

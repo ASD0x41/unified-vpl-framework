@@ -43,6 +43,10 @@ export default function Console({ logMessages, setLogMessages }) {
         // const result = eval(command);
         // console.log(result);
 
+        var newLogMessages = logMessages;
+        newLogMessages[logMessages.length - 1].message = logMessages[logMessages.length - 1].message + "\t" + command;
+        setLogMessages(newLogMessages);
+
         window.dispatchEvent(
             new CustomEvent("get-input", { detail: command })
         );

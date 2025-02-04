@@ -94,6 +94,7 @@
 
 .langhead {
     /* font-family: Georgia, serif; */
+    /* font-size: 16px; */
     display: block;
     padding: 5px;
     word-wrap: break-word;
@@ -109,6 +110,7 @@
 
 .langheadnull {
     display: block;
+    font-size: 16px;
     /* font-family: Georgia, serif; */
     padding: 5px;
     word-wrap: break-word;

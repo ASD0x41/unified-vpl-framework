@@ -17,6 +17,18 @@ export default function Panel({ libLevel, setLibLevel, canvasProps, selectedComp
 
     const handleInputChange = (key, event) => {
         components.current[selectedComponent].props[key][1] = event.target.value;
+
+        // var textareas = components.current[selectedComponent].visual.getObjects().filter(obj => (obj.type === 'text'))
+        // textareas[0].set('text', textareas[0].text.replaceAll(key, event.target.value));
+
+        // components.current[selectedComponent].props.forEach(prop => {
+        //     textareas[0].set('text', textareas[0].text.replaceAll(prop[0], prop[1]));
+        // })
+
+        var proptext = components.current[selectedComponent].visual.getObjects().filter(obj => (obj.prop === components.current[selectedComponent].props[key][0]))
+        if (proptext.length !== 0) {
+            proptext[0].set('text', event.target.value);
+        }
     };
 
     const autoResize = (e) => {

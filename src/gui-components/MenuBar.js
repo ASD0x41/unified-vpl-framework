@@ -82,6 +82,8 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
         gencode = gencode.replaceAll("input(", "await input(");
 
         const code = "async def main():\n"+ gencode + "\nawait main()";
+        
+        // console.log(code);
 
         await runPythonCode(code);
     };
@@ -108,7 +110,7 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
             canvas.current.viewportTransform[4] = canvas.current.viewportTransform[5] = 0;
             canvas.current.viewportTransform[0] = canvas.current.viewportTransform[3] = 1;
 
-            const allObjects = canvas.getObjects();
+            const allObjects = canvas.current.getObjects();
             allObjects.forEach(object => {
                 object.setCoords();
             });
@@ -432,13 +434,6 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
 
         reader.readAsText(file);
     };
-
-    // async function getUserInput(promptText) {
-    //     return new Promise((resolve) => {
-    //       let userInput = prompt(promptText);  // Use browser's prompt for simplicity
-    //       resolve(userInput);
-    //     });
-    //   }
       
 
 
