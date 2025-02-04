@@ -25,10 +25,16 @@ The project is currently in an **alpha** stage. A basic prototype is available f
 
 You can try a web demo [here](https://web.nullprime.com/unified-vpl-framework).
 
-Sample languages:
-- **Block-based VPL**: [web.nullprime.com/unified-vpl-framework/?type=block](https://web.nullprime.com/unified-vpl-framework/?type=block)
-- **Flowchart-based VPL**: [web.nullprime.com/unified-vpl-framework/?type=flow](https://web.nullprime.com/unified-vpl-framework/?type=flow)
-- **Dataflow-based VPL**: [web.nullprime.com/unified-vpl-framework/?type=data](https://web.nullprime.com/unified-vpl-framework/?type=data)
+### Demos
+
+You can try out demos of the different visual programming language paradigms:
+
+- **Block-based:** [Demo](https://web.nullprime.com/unified-vpl-framework/?type=block)
+  - [block.json definition](https://web.nullprime.com/unified-vpl-framework/samples/block.json)
+- **Flowchart-based:** [Demo](https://web.nullprime.com/unified-vpl-framework/?type=flow)
+  - [flow.json definition](https://web.nullprime.com/unified-vpl-framework/samples/flow.json)
+- **Dataflow-based:** [Demo](https://web.nullprime.com/unified-vpl-framework/?type=data)
+  - [data.json definition](https://web.nullprime.com/unified-vpl-framework/samples/data.json)
 
 Documentation will be available [here](https://web.nullprime.com/unified-vpl-framework/docs/).
 
