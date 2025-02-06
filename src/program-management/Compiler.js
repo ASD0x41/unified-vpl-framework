@@ -144,7 +144,7 @@ export function Compiler(components) {
                         // });
                     }
 
-                    return progCode;
+                    return "\t" + progCode;
                 } else {
                     console.error("Program has no starting point!");
                     return "";
