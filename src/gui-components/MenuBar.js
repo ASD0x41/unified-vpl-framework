@@ -33,33 +33,38 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
 
     useEffect(() => {
         const loadPyodide = async () => {
-            const pyodideInstance = await window.loadPyodide({
-                indexURL: "./pyodide/",
-            });
-
-            setPyodide(pyodideInstance);
-
-            window.getUserInput = async function(promptText) {
-                console.log(promptText);
-                return new Promise((resolve) => {
-                    
-                    const inputListener = (userInput) => {
-                        resolve(userInput.detail);
-                    };
-                    window.addEventListener("get-input", inputListener, { once: true });
-
-                    // const userInput = prompt(promptText);
-                    // resolve(userInput);
+            try {
+                const pyodideInstance = await window.loadPyodide({
+                    indexURL: "./pyodide/",
                 });
-            };
 
-            await pyodideInstance.runPythonAsync(`
+                setPyodide(pyodideInstance);
+
+                window.getUserInput = async function (promptText) {
+                    console.log(promptText);
+                    return new Promise((resolve) => {
+
+                        const inputListener = (userInput) => {
+                            resolve(userInput.detail);
+                        };
+                        window.addEventListener("get-input", inputListener, { once: true });
+
+                        // const userInput = prompt(promptText);
+                        // resolve(userInput);
+                    });
+                };
+
+                await pyodideInstance.runPythonAsync(`
                 import js
     
                 # Define the async input function
                 async def input(prompt=''):
                     return await js.getUserInput(prompt)
                 `);
+            } catch (err) {
+                console.error("Failed to load Pyodide. Reloading the page...", err);
+                window.location.reload(); // Reloads the page on failure
+            }
         };
 
         loadPyodide();
@@ -78,11 +83,11 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
         let gencode = compileProgram(lang);
 
         gencode = gencode.replaceAll("\n", "\n\t");
-        gencode = "\n\t\t" + gencode;
+        gencode = "\n\t" + gencode;
         gencode = gencode.replaceAll("input(", "await input(");
 
-        const code = "async def main():\n"+ gencode + "\nawait main()";
-        
+        const code = "async def main():\n" + gencode + "\nawait main()";
+
         // console.log(code, "\n");
 
         await runPythonCode(code);
@@ -434,7 +439,7 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
 
         reader.readAsText(file);
     };
-      
+
 
 
     const downloadCode = async () => {
@@ -452,7 +457,7 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
         document.body.removeChild(link);
     };
 
-    
+
 
     return (
         <aside className="menu-bar">

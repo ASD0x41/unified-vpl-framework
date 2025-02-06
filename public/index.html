@@ -11,7 +11,7 @@
   <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
   <title>Unified VPL Framework</title>
   <!-- <script src="https://cdn.jsdelivr.net/pyodide/v0.27.2/full/pyodide.js"></script> -->
-  <script src="%PUBLIC_URL%/pyodide/pyodide.js"></script>
+  <script src="%PUBLIC_URL%/pyodide/pyodide.js" onerror="window.location.reload();"></script>
   <script>
     if (window.innerWidth < 800) {
       window.location.href = './mobile.html';

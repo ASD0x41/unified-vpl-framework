@@ -23,7 +23,7 @@ function App() {
   useEffect(() => {
     setTimeout(function () {
       document.getElementById('spinner-overlay').style.display = 'none';
-    }, 2000);
+    }, 3000);
 
     const params = new URLSearchParams(window.location.search);
     var langtype = params.get('type');
