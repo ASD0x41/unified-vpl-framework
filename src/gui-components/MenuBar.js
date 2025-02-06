@@ -83,7 +83,7 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
 
         const code = "async def main():\n"+ gencode + "\nawait main()";
         
-        console.log(code, "\n");
+        // console.log(code, "\n");
 
         await runPythonCode(code);
     };
