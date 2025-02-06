@@ -36,7 +36,7 @@
   },
   "scripts": {
     "web": "yarn react-start",
-    "build": "react-app-rewired build && rm -rf docs/* && cp -r build/* docs/ && echo > docs/.nojekyll",
+    "build": "react-app-rewired build && rm -rf docs/* && cp -r build/* docs/ && echo > docs/.nojekyll && echo vplforge.nullprime.com > docs/CNAME",
     "desktop": "concurrently \"yarn react-start\" \"wait-on http://localhost:3000 && yarn electron-start\"",
     "react-start": "react-app-rewired start",
     "electron-start": "electron . --disable-gpu",
