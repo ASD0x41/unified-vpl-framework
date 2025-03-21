@@ -99,8 +99,9 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
             canvasInstance.discardActiveObject()
 
             if (clickedPin) {
+                console.log("clicked pin", clickedPin.idx, "of target ", targetGroup.ID)
                 if (isConnecting.current && srcGroup.current && srcPin.current) {
-                    if (components.current[targetGroup.ID] !== undefined && !components.current[targetGroup.ID].pins[clickedPin.idx] || (lang.type === 'dataflow' && clickedPin.idx[0] === '$') || (lang.type === 'flowchart' && clickedPin.idx[0] === '@')) {
+                    if (components.current[targetGroup.ID] !== undefined && ((!components.current[targetGroup.ID].pins[clickedPin.idx]) || (lang.type === 'dataflow' && clickedPin.idx[0] === '$') || (lang.type === 'flowchart' && clickedPin.idx[0] === '@'))) {
                         if (srcGroup.current.ID !== targetGroup.ID) {
                             if ((srcPin.current.idx[0] === '@' && clickedPin.idx[0] === '$') || (srcPin.current.idx[0] === '$' && clickedPin.idx[0] === '@')) {
                                 dstGroup.current = targetGroup;
@@ -144,7 +145,7 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
                         srcPin.current.set('fill', 'orange');
                         //console.log("Pin selected! Click on another group to connect pins.");
                     }
-                    else if (lang.type === 'dataflow' && clickedPin.idx[0] === '$' || lang.type === 'flowchart' && clickedPin.idx[0] === '@') {
+                    else if ((lang.type === 'dataflow' && clickedPin.idx[0] === '$') || (lang.type === 'flowchart' && clickedPin.idx[0] === '@')) {
                         srcGroup.current = targetGroup;
                         srcPin.current = clickedPin;
                         srcPin.current.set('fill', 'orange');
@@ -594,7 +595,19 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
 
             newGroup.getObjects().filter(obj => (obj.idx && obj.idx === nearPin.idx))[0].side[1] = Yext + nearPin.side[0];
             // console.log("newside1:", newGroup.getObjects().filter(obj => (obj.idx && obj.idx === nearPin.idx))[0].side[1])
+
+            nearBlock.getObjects().filter(obj => obj.type === 'text').forEach((textObj) => {
+                if (textObj.prop) {
+                    const proptext = newGroup.getObjects().filter(newObj => (newObj.type === 'text' && newObj.prop === textObj.prop));
+                    if (proptext.length !== 0) {
+                        proptext[0].set('text', textObj.text);
+                    }
+                }
+            });
+
             components.current[nearBlock.ID].visual = newGroup;
+
+            
 
             canvas.remove(nearBlock);
             canvas.add(newGroup);
@@ -624,6 +637,7 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
     const blockDropped = () => {
         if (lang.type === 'block') {
             const droppedBlock = canvasRef.current.getActiveObject();
+            
 
             if (droppedBlock !== undefined) {
                 const inpPin = droppedBlock.getObjects().filter(obj => (obj.idx && obj.idx[0] === '@' && obj.idx[1] === '1'))[0];
@@ -631,7 +645,7 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
                     const inpPinCoords = { x: inpPin.left + droppedBlock.left + droppedBlock.width / 2, y: inpPin.top + droppedBlock.top + droppedBlock.height / 2 };
     
                     const canvas = canvasRef.current;
-                    const otherBlocks = canvas._objects.slice(321);
+                    let otherBlocks = canvas._objects.slice(321);
     
                     if (components.current[droppedBlock.ID].pins["@1"] && components.current[components.current[droppedBlock.ID].pins["@1"][0][0]].pins[components.current[droppedBlock.ID].pins["@1"][0][1]] && components.current[components.current[droppedBlock.ID].pins["@1"][0][0]].pins[components.current[droppedBlock.ID].pins["@1"][0][1]][0][0] === droppedBlock.ID && components.current[components.current[droppedBlock.ID].pins["@1"][0][0]].pins[components.current[droppedBlock.ID].pins["@1"][0][1]][0][1] === "@1") {
                         //if (components.current[droppedBlock.ID].pins["@1"]) {
@@ -684,6 +698,8 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
                     let nearPin = null;
                     let nearPinCoords = null;
                     let nearBlock = null;
+
+                    otherBlocks = canvas._objects;   // investigate reindexing!!!
     
                     for (let otherblock of otherBlocks) {
                         if (otherblock.ID !== droppedBlock.ID) {
@@ -691,7 +707,7 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
                                 let otherOutPins = otherblock.getObjects().filter(obj => (obj.idx && (obj.idx[0] === '$')));
     
                                 for (let pin of otherOutPins) {
-                                    if (isNearPin(inpPinCoords, pin, otherblock, 25) && !components.current[otherblock.ID].pins[pin.idx]) {
+                                    if (isNearPin(inpPinCoords, pin, otherblock, 50) && !components.current[otherblock.ID].pins[pin.idx]) { // changed from 25
                                         nearPin = pin;
                                         nearBlock = otherblock;
                                         nearPinCoords = [pin.left + otherblock.left + otherblock.width / 2, pin.top + otherblock.top + otherblock.height / 2];
@@ -713,7 +729,6 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
                         snapWithChildren(droppedBlock, changeCoords);
     
                         canvas.renderAll();
-                        //console.log("Hello!")
     
                         {
                             let upperBlock = nearBlock;
@@ -797,7 +812,19 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
 
             newGroup.getObjects().filter(obj => (obj.idx && obj.idx === nearPin.idx))[0].side[1] = Yext + nearPin.side[0];
             // console.log("newside1:", newGroup.getObjects().filter(obj => (obj.idx && obj.idx === nearPin.idx))[0].side[1])
+
+            nearBlock.getObjects().filter(obj => obj.type === 'text').forEach((textObj) => {
+                if (textObj.prop) {
+                    const proptext = newGroup.getObjects().filter(newObj => (newObj.type === 'text' && newObj.prop === textObj.prop));
+                    if (proptext.length !== 0) {
+                        proptext[0].set('text', textObj.text);
+                    }
+                }
+            });
+
             components.current[nearBlock.ID].visual = newGroup;
+
+            
 
             canvas.remove(nearBlock);
             canvas.add(newGroup);

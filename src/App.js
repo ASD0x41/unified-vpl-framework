@@ -28,11 +28,8 @@ function App() {
     const params = new URLSearchParams(window.location.search);
     var langtype = params.get('type');
 
-    if (langtype === null) {
-      langtype = 'block';
-    }
-
-    fetch('./samples/' + langtype + '.json')
+    if (langtype !== null) {
+      fetch('./samples/' + langtype + '.json')
       .then((response) => response.json())
       .then((jsonData) => {
         const comps = jsonData["components"];
@@ -50,6 +47,7 @@ function App() {
         setLang({ name: jsonData["name"], type: jsonData["type"] });
       })
       .catch((error) => console.error('Error fetching JSON:', error));
+    }
   }, []);
 
 

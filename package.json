@@ -40,7 +40,8 @@
     "desktop": "concurrently \"yarn react-start\" \"wait-on http://localhost:3000 && yarn electron-start\"",
     "react-start": "react-app-rewired start",
     "electron-start": "electron . --disable-gpu",
-    "package": "yarn build && electron-builder"
+    "package": "yarn build && electron-builder",
+    "deploy": "sh -c 'yarn build && cp -r build/* docs/ && git status && git add . && read -p \"Are you sure you want to commit? (y/n) \" confirm && [ \"$confirm\" = \"y\" ] && git commit -m \"$1\" ${2:+-m \"$2\"} && git push origin main'"
   },
   "eslintConfig": {
     "extends": [

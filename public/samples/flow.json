@@ -471,7 +471,7 @@
             "inpins": [[50,0,"top"]],
             "outpins": [[0,50,"left"],[100,50,"right"]],
             "props": ["condition"],
-            "code": "if #1:\n\t$1\nelse:\n\t$2\n$1"
+            "code": "if #1:\n\t$1\nelse:\n\t$2"
         },
         {
             "id": "ret",

@@ -127,7 +127,6 @@ export function computePoints(pin1, grp1, pin2, grp2) {
                 points.push({ x: pin2X, y: pin1Y - 75 });
             }
         } else {
-            points.push({ x: pin1X, y: pin1Y + 50 });
             if (pin1X > pin2X) {
                 points.push({ x: pin2X - 100, y: pin1Y });
                 points.push({ x: pin2X - 100, y: pin2Y - 50 });

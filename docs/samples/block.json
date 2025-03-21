@@ -280,7 +280,7 @@
             },
             "text": [
                 {
-                    "content": "PRINT",
+                    "content": "PRINT:",
                     "fontSize": 14,
                     "fill": "white",
                     "textAlign": "center",
