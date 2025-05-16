@@ -12,6 +12,9 @@ import Panel from './gui-components/Panel.js'
 import { Loader } from './program-management/Loader.js';
 import { Manager } from './program-management/Manager.js';
 
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 function App() {
   const { LoadLanguage } = Loader();
@@ -26,7 +29,7 @@ function App() {
     }, 3000);
 
     const params = new URLSearchParams(window.location.search);
-    var langtype = params.get('type');
+    var langtype = params.get('type') ?  params.get('type') : 'flow';
 
     if (langtype !== null) {
       fetch('./samples/' + langtype + '.json')
@@ -131,7 +134,10 @@ function App() {
 
   const loadVisualLang = (json) => {
     const loadedLang = LoadLanguage(json, setLibraryComponents);
-    setLang(loadedLang);
+    if ('valid' in loadedLang && loadedLang.valid === false)
+      toast.error("Invalid Language Definition!" + loadedLang.errors)
+    else
+      setLang(loadedLang);
   };
 
   const dragStarter = (id, e) => {
@@ -149,6 +155,18 @@ function App() {
         <div id="spinner-overlay">
           <div className="spinner"></div>
         </div>
+        <ToastContainer
+          position="top-left"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick={false}
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+        />
         <Header />
         <MenuBar clearConsole={clearConsole} canvas={canvasRef} loadComponents={loadVisualLang} setSelectedComponent={setSelectedComponent} lang={lang} libComps={libraryComponents} setLang={setLang} />
         <Workspace onCanvasReady={handleCanvasReady} draggedComponent={draggedComponent} libComps={libraryComponents} setSelectedComponent={setSelectedComponent} lang={lang} />

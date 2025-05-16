@@ -1,3 +1,5 @@
+import { toast } from 'react-toastify';
+
 export function Compiler(components) {
 
     const getCode = (block, langtype) => {
@@ -49,6 +51,7 @@ export function Compiler(components) {
             Object.keys(replacements).forEach((repl) => {
                 code = code.replace(repl, replacements[repl]);
             });
+            
         }
 
         return code;
@@ -134,19 +137,19 @@ export function Compiler(components) {
                     progCode = progCode.replaceAll("\n", "\n\t");
 
                     {
-                        // let newprogCode = progCode.replaceAll("\t", "    ");
+                        let newprogCode = progCode.replaceAll("\t", "    ");
 
-                        // let lines = newprogCode.split('\n');
-                        // lines.forEach((line, index) => {
-                        //     if (index < lines.length - 1) {
-                        //         console.log(`${index + 1}:    ${line}`);
-                        //     }
-                        // });
+                        let lines = newprogCode.split('\n');
+                        lines.forEach((line, index) => {
+                            if (index < lines.length - 1) {
+                                console.log(`${index + 1}:    ${line}`);
+                            }
+                        });
                     }
 
                     return "\t" + progCode;
                 } else {
-                    console.error("Program has no starting point!");
+                    toast.error("Program has no starting point!");
                     return "";
                 }
             }

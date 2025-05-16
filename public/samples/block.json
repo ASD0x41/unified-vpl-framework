@@ -135,6 +135,48 @@
             "code": "#1\n$1"
         },
         {
+            "id": "file-read",
+            "style": {
+                "type": "polygon",
+                "points": [
+                    { "x": 0, "y": 0 },
+                    { "x": 90, "y": 0 },
+                    { "x": 100, "y": 5 },
+                    { "x": 110, "y": 0 },
+                    { "x": 200, "y": 0 },
+                    { "x": 200, "y": 50 },
+                    { "x": 110, "y": 50 },
+                    { "x": 100, "y": 55 },
+                    { "x": 90, "y": 50 },
+                    { "x": 0, "y": 50 }
+                ],
+                "fill": "violet"
+            },
+            "text": [
+                {
+                    "content": "READ:",
+                    "fontSize": 14,
+                    "fill": "white",
+                    "textAlign": "center",
+                    "area": [[20,0],[100,50]],
+                    "prop": null
+                },
+                {
+                    "content": "",
+                    "fontSize": 14,
+                    "fill": "white",
+                    "textAlign": "center",
+                    "area": [[100,0],[180,50]],
+                    "prop": "varname"
+                }
+            ],
+            "dimensions": [200,50],
+            "inpins": [[100,0,"top",0]],
+            "outpins": [[100,50,"bottom",0]],
+            "props": ["varname"],
+            "code": "#1 = read()\n$1"
+        },
+        {
             "id": "input-str",
             "style": {
                 "type": "polygon",
@@ -301,6 +343,48 @@
             "outpins": [[100,50,"bottom",0]],
             "props": ["content"],
             "code": "print(f\"#1\")\n$1"
+        },
+        {
+            "id": "file-write",
+            "style": {
+                "type": "polygon",
+                "points": [
+                    { "x": 0, "y": 0 },
+                    { "x": 90, "y": 0 },
+                    { "x": 100, "y": 5 },
+                    { "x": 110, "y": 0 },
+                    { "x": 200, "y": 0 },
+                    { "x": 200, "y": 50 },
+                    { "x": 110, "y": 50 },
+                    { "x": 100, "y": 55 },
+                    { "x": 90, "y": 50 },
+                    { "x": 0, "y": 50 }
+                ],
+                "fill": "indigo"
+            },
+            "text": [
+                {
+                    "content": "WRITE:",
+                    "fontSize": 14,
+                    "fill": "white",
+                    "textAlign": "center",
+                    "area": [[20,0],[100,50]],
+                    "prop": null
+                },
+                {
+                    "content": "",
+                    "fontSize": 14,
+                    "fill": "white",
+                    "textAlign": "center",
+                    "area": [[100,0],[180,50]],
+                    "prop": "content"
+                }
+            ],
+            "dimensions": [200,50],
+            "inpins": [[100,0,"top",0]],
+            "outpins": [[100,50,"bottom",0]],
+            "props": ["varname","filename"],
+            "code": "write(#2, #1)\n$1"
         },
         {
             "id": "loop-for",

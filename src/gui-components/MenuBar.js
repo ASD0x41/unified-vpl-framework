@@ -39,6 +39,13 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
                 });
 
                 setPyodide(pyodideInstance);
+                // await pyodideInstance.loadPackage([
+                //     "https://cdn.jsdelivr.net/pyodide//v0.26.4/full/micropip-0.6.0-py3-none-any.whl",
+                //     // "https://cdn.jsdelivr.net/pyodide/v0.27.1/full/numpy-2.0.2-cp312-cp312-pyodide_2024_0_wasm32.whl",
+                //     // "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pandas-2.2.0-cp312-cp312-pyodide_2024_0_wasm32.whl",
+                //     // "https://cdn.jsdelivr.net/pyodide/v0.27.3/full/pytz-2024.1-py2.py3-none-any.whl",
+                //     // "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/python_dateutil-2.9.0.post0-py2.py3-none-any.whl"
+                // ]);
 
                 window.getUserInput = async function (promptText) {
                     console.log(promptText);
@@ -54,13 +61,56 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
                     });
                 };
 
+                window.fileReader = async function () {
+                    return new Promise((resolve, reject) => {
+                        const input = document.createElement("input");
+                        input.type = "file";
+
+                        input.onchange = () => {
+                        const file = input.files[0];
+                        const reader = new FileReader();
+
+                        reader.onload = () => resolve(reader.result);
+                        reader.onerror = () => reject(reader.error);
+
+                        reader.readAsText(file);
+                        };
+
+                        input.click();
+                    });
+                };
+
+                window.fileWriter = async function (filename, content) {
+                    const blob = new Blob([content], { type: "text/plain" });
+                    const link = document.createElement("a");
+
+                    link.href = URL.createObjectURL(blob);
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                };
+
+
                 await pyodideInstance.runPythonAsync(`
                 import js
+                #import builtins
     
                 # Define the async input function
                 async def input(prompt=''):
                     return await js.getUserInput(prompt)
+
+                async def read():
+                    return await js.fileReader()
+
+                def write(filename, content):
+                    return js.fileWriter(filename, content)
+
+                #builtins.input = input
+                #globals()['read'] = read
+                #globals()['write'] = write
                 `);
+
             } catch (err) {
                 console.error("Failed to load Pyodide. Reloading the page...", err);
                 window.location.reload(); // Reloads the page on failure
@@ -68,6 +118,7 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
         };
 
         loadPyodide();
+
     }, []);
 
     const runPythonCode = async (code) => {
@@ -85,6 +136,7 @@ export default function MenuBar({ clearConsole, canvas, loadComponents, setSelec
         gencode = gencode.replaceAll("\n", "\n\t");
         gencode = "\n\t" + gencode;
         gencode = gencode.replaceAll("input(", "await input(");
+        gencode = gencode.replaceAll("read(", "await read(");
 
         const code = "async def main():\n" + gencode + "\nawait main()";
 

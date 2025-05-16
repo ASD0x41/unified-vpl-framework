@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { generateGroupedComponent } from './Library';
 import { useConnectionContext } from '../program-management/Manager.js';
 import { computePoints } from '../program-management/Helper.js';
+import { toast } from 'react-toastify';
 
 export default function Workspace({ onCanvasReady, draggedComponent, libComps, setSelectedComponent, lang }) {
     const draggingBlock = useRef(false);
@@ -99,7 +100,7 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
             canvasInstance.discardActiveObject()
 
             if (clickedPin) {
-                console.log("clicked pin", clickedPin.idx, "of target ", targetGroup.ID)
+                // toast.error("clicked pin " + String(clickedPin.idx) + " of target " + String(targetGroup.ID))
                 if (isConnecting.current && srcGroup.current && srcPin.current) {
                     if (components.current[targetGroup.ID] !== undefined && ((!components.current[targetGroup.ID].pins[clickedPin.idx]) || (lang.type === 'dataflow' && clickedPin.idx[0] === '$') || (lang.type === 'flowchart' && clickedPin.idx[0] === '@'))) {
                         if (srcGroup.current.ID !== targetGroup.ID) {
@@ -129,14 +130,14 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
                                 canvasInstance.hoverCursor = 'grab';
                             }
                             else {
-                                console.error("Connection must be between an input pin and an output pin! Select an appropriate pin.")
+                                toast.error("Connection must be between an input pin and an output pin! Select an appropriate pin.")
                             }
                         } else {
-                            console.error("Cannot connect input and output pins of the same component! Select an appropriate component.")
+                            toast.error("Cannot connect input and output pins of the same component! Select an appropriate component.")
                         }
                     }
                     else {
-                        console.error("Pin is already in use. Select another pin.");
+                        toast.error("Pin is already in use. Select another pin.");
                     }
                 } else {
                     if (components.current[targetGroup.ID] !== undefined && !components.current[targetGroup.ID].pins[clickedPin.idx]) {
@@ -151,11 +152,11 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
                         srcPin.current.set('fill', 'orange');
                     }
                     else {
-                        console.error("Pin is already in use. Select another pin.");
+                        toast.error("Pin is already in use. Select another pin.");
                     }
                 }
             } else {
-                console.error("Please click near a pin to select it.");
+                toast.error("Please click near a pin to select it.");
                 isConnecting.current = false;
                 canvasInstance.hoverCursor = 'grab';
                 if (srcPin.current) {
@@ -215,7 +216,7 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
                             }
                         }
                         else {
-                            console.error("There was no connection between the specified pins already.")
+                            toast.error("There was no connection between the specified pins already.")
                             srcPin.current.set('fill', 'red');
                         }
 
@@ -227,7 +228,7 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
                         canvasInstance.hoverCursor = 'grab';
                     }
                     else {
-                        console.error("Pin is already NOT in use. Select another pin.");
+                        toast.error("Pin is already NOT in use. Select another pin.");
                     }
                 } else {
                     if (components.current[targetGroup.ID].pins[clickedPin.idx]) {
@@ -237,11 +238,11 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
                         //console.log("Pin selected! Click on another group to disconnect pins.");
                     }
                     else {
-                        console.error("Pin is already NOT in use. Select another pin.");
+                        toast.error("Pin is already NOT in use. Select another pin.");
                     }
                 }
             } else {
-                console.error("Please click near a pin to select it.");
+                toast.error("Please click near a pin to select it.");
                 isDisconnecting.current = false;
                 canvasInstance.hoverCursor = 'grab';
                 if (srcPin.current) {
@@ -435,6 +436,7 @@ export default function Workspace({ onCanvasReady, draggedComponent, libComps, s
 
         canvas.on('object:moving', function (e) {
             const movingObject = e.target;
+            
             
             if (lang.type !== 'block') {
                 const pins = movingObject.getObjects().filter(obj => obj.type === 'circle' && obj.idx !== null);

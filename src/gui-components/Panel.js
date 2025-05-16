@@ -27,7 +27,7 @@ export default function Panel({ libLevel, setLibLevel, canvasProps, selectedComp
 
         var proptext = components.current[selectedComponent].visual.getObjects().filter(obj => (obj.prop === components.current[selectedComponent].props[key][0]))
         if (proptext.length !== 0) {
-            proptext[0].set('text', event.target.value);
+            proptext[0].set('text', event.target.value.substring(0, 25));
             proptext[0].set('dirty', true);
         }
     };

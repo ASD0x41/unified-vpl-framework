@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { toast } from 'react-toastify';
 
 export default function Console({ logMessages, setLogMessages }) {
   const [collapse, setCollapse] = useState(true);
@@ -27,6 +28,7 @@ export default function Console({ logMessages, setLogMessages }) {
       originalConsoleError(...args);
       const errorMessage = args.join(' ');
       setLogMessages(prevMessages => [...prevMessages, { type: 'error', message: errorMessage }]);
+      toast.error(errorMessage) //
     };
 
     return () => {
